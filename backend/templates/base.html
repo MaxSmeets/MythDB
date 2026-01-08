@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}MythDB{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+
+    {% block head %}{% endblock %}
+</head>
+<body>
+
+<header>
+    {% block header %}
+    <h1>MythDB</h1>
+    {% endblock %}
+</header>
+
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<footer>
+    {% block footer %}
+    <small>MythDB — your world, your canon</small>
+    {% endblock %}
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>

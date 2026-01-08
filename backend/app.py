@@ -1,10 +1,24 @@
+import markdown
 from flask import Flask, render_template
+from pathlib import Path
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html", active_page="index")
+    md_path = Path("../data/test.md")
+
+    if md_path.exists():
+        raw_md = md_path.read_text(encoding="utf-8")
+        html = markdown.markdown(raw_md, extensions=["fenced_code"])
+    else:
+        html = "<p><strong>data/test.md not found</strong></p>"
+
+    return render_template(
+        "index.html",
+        rendered_html=html,
+        active_page="index"
+    )
 
 @app.route("/admin")
 def admin_dashboard():

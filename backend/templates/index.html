@@ -9,9 +9,11 @@ MythDB · Home
 {% endblock %}
 
 {% block content %}
-<h2>Welcome</h2>
-<p>MythDB is running.</p>
-<p>This content is injected into the <code>content</code> block.</p>
+<h2>Markdown test</h2>
+
+<div class="markdown">
+    {{ rendered_html | safe }}
+</div>
 {% endblock %}
 
 {% block scripts %}

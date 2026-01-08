@@ -3,6 +3,112 @@
 {% block title %}MythDB · Admin{% endblock %}
 
 {% block content %}
-<h2>Admin Dashboard</h2>
-<p>Quick actions and system info will go here.</p>
+<header>
+  <h2>Admin Dashboard</h2>
+  <p>System overview and maintenance actions.</p>
+</header>
+
+<section aria-labelledby="system-status-title">
+  <header>
+    <h3 id="system-status-title">System status</h3>
+  </header>
+
+  <dl>
+    <div>
+      <dt>MythDB version</dt>
+      <dd>v0.1.0 (dev)</dd>
+    </div>
+
+    <div>
+      <dt>Runtime</dt>
+      <dd>Python 3.12 · Flask</dd>
+    </div>
+
+    <div>
+      <dt>Database</dt>
+      <dd>SQLite (./data/mythdb.sqlite)</dd>
+    </div>
+
+    <div>
+      <dt>Data directory</dt>
+      <dd>/app/data</dd>
+    </div>
+
+    <div>
+      <dt>Uptime</dt>
+      <dd>2h 14m</dd>
+    </div>
+  </dl>
+</section>
+
+<section aria-labelledby="projects-summary-title">
+  <header>
+    <h3 id="projects-summary-title">Projects summary</h3>
+  </header>
+
+  <ul>
+    <li><strong>Projects:</strong> 3</li>
+    <li><strong>Total entries:</strong> 412</li>
+    <li><strong>Last updated:</strong> “Ashfall” (12 minutes ago)</li>
+  </ul>
+</section>
+
+<section aria-labelledby="actions-title">
+  <header>
+    <h3 id="actions-title">Actions</h3>
+    <p>Administrative operations. These will be wired up later.</p>
+  </header>
+
+  <div role="group" aria-label="Admin actions">
+    <button type="button">+ New project</button>
+    <button type="button">Backup</button>
+    <button type="button">Export</button>
+  </div>
+
+  <p>
+    <small>
+      Tip: keep backups and exports in a separate folder outside the app directory.
+    </small>
+  </p>
+</section>
+
+<section aria-labelledby="config-title">
+  <header>
+    <h3 id="config-title">Configuration</h3>
+  </header>
+
+  <dl>
+    <div>
+      <dt>Authentication</dt>
+      <dd>Disabled</dd>
+    </div>
+
+    <div>
+      <dt>Public access</dt>
+      <dd>Off</dd>
+    </div>
+
+    <div>
+      <dt>Editing mode</dt>
+      <dd>Read/Write</dd>
+    </div>
+  </dl>
+</section>
+
+<section aria-labelledby="logs-title">
+  <header>
+    <h3 id="logs-title">Logs</h3>
+    <p>Recent messages (static placeholder for now).</p>
+  </header>
+
+  <details>
+    <summary>Show last 20 lines</summary>
+    <pre><code>[2026-01-08 10:02:11] INFO  Starting MythDB v0.1.0
+[2026-01-08 10:02:11] INFO  Data dir: /app/data
+[2026-01-08 10:02:11] INFO  Database: SQLite
+[2026-01-08 10:02:12] INFO  Listening on 0.0.0.0:5000
+[2026-01-08 10:05:43] WARN  Export requested (not yet implemented)
+[2026-01-08 10:06:10] INFO  Health check OK</code></pre>
+  </details>
+</section>
 {% endblock %}

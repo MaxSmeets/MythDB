@@ -3,6 +3,10 @@ from flask import Flask, render_template
 app = Flask(__name__)
 
 @app.route("/")
+def index():
+    return render_template("index.html", active_page="index")
+
+@app.route("/admin")
 def admin_dashboard():
     return render_template("admin.html", active_page="admin")
 

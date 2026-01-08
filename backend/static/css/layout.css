@@ -1,9 +1,53 @@
-.topbar {
+html, body {
+  height: 100%;
+  margin: 0;
+}
+section { padding: 1rem 0; border-top: 1px solid rgba(0,0,0,0.1); }
+dl > div { display: flex; gap: 1rem; padding: 0.25rem 0; }
+dt { font-weight: 700; min-width: 12rem; }
+button { 
+    margin-right: 0.5rem; 
+    padding: 0.25rem 0.5rem; 
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.2);
+}
+button:hover { cursor: pointer; }
+pre { overflow: auto; padding: 0.75rem; border-radius: 6px; }
+
+/* App container */
+.app-layout {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Top menu */
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0;
+  align-items: center;
+
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid rgba(0,0,0,0.15);
+  background: white;
+}
+
+/* Main content fills remaining space */
+.main-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+
+  padding: 1rem;
+}
+
+/* Footer sticks to bottom */
+.footer {
+  flex: 0 0 auto;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid rgba(0,0,0,0.15);
+  background: white;
+  opacity: 0.8;
 }
 
 .brand a {

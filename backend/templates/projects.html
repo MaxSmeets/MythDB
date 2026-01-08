@@ -3,7 +3,78 @@
 {% block title %}MythDB · Projects{% endblock %}
 
 {% block content %}
-<h2>Projects Overview</h2>
-<button>New</button>
-<p>Your worlds, campaigns, or settings will be listed here.</p>
+<header class="page-header">
+  <h2>Projects</h2>
+  <p>Create and manage your worlds, campaigns, or settings.</p>
+</header>
+
+<section class="toolbar" aria-label="Project actions">
+  <button type="button" id="openProjectModal">New</button>
+</section>
+
+<section aria-label="Project list" class="cards">
+  {% if projects and projects|length > 0 %}
+    {% for p in projects %}
+      <article class="card">
+        <header class="card-header">
+          <h3 class="card-title">{{ p.name }}</h3>
+        </header>
+        <p class="card-meta"><strong>Genre:</strong> {{ p.genre }}</p>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No projects yet, click <strong>New</strong> to create one.</p>
+  {% endif %}
+</section>
+
+<dialog id="projectModal" aria-labelledby="projectModalTitle">
+  <form method="post" action="{{ url_for('create_project') }}" class="modal">
+    <header class="modal-header">
+      <h3 id="projectModalTitle">New project</h3>
+    </header>
+
+    <div class="modal-body">
+      <label>
+        <span>Project name</span>
+        <input name="name" type="text" required placeholder="e.g. Ashfall" />
+      </label>
+
+      <label>
+        <span>Genre</span>
+        <input name="genre" type="text" required placeholder="e.g. Dark fantasy" />
+      </label>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" id="closeProjectModal">Cancel</button>
+      <button type="submit">Create</button>
+    </footer>
+  </form>
+</dialog>
 {% endblock %}
+
+{% block scripts %}
+<script>
+  const modal = document.getElementById("projectModal");
+  const openBtn = document.getElementById("openProjectModal");
+  const closeBtn = document.getElementById("closeProjectModal");
+
+  openBtn.addEventListener("click", () => {
+    modal.showModal();
+    const firstInput = modal.querySelector('input[name="name"]');
+    if (firstInput) firstInput.focus();
+  });
+
+  closeBtn.addEventListener("click", () => modal.close());
+
+  // Close when clicking backdrop
+  modal.addEventListener("click", (e) => {
+    const rect = modal.getBoundingClientRect();
+    const clickedInDialog =
+      rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+      rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
+    if (!clickedInDialog) modal.close();
+  });
+</script>
+{% endblock %}
+s

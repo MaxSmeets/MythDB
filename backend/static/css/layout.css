@@ -70,3 +70,72 @@ pre { overflow: auto; padding: 0.75rem; border-radius: 6px; }
   font-weight: 700;
   text-decoration: underline;
 }
+
+/* PROJECTS */
+
+.page-header { margin-bottom: 1rem; }
+.toolbar { margin-bottom: 1rem; }
+
+.muted { opacity: 0.7; }
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 10px;
+  padding: 1rem;
+  background: white;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
+.card-title { margin: 0 0 0.5rem 0; }
+.card-meta { margin: 0; opacity: 0.85; }
+
+/* Modal */
+dialog#projectModal {
+  border: none;
+  padding: 0;
+  border-radius: 12px;
+  width: min(520px, calc(100vw - 2rem));
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.modal {
+  padding: 1rem;
+}
+
+.modal-header { margin-bottom: 0.75rem; }
+.modal-body { display: grid; gap: 0.75rem; }
+
+.modal-body label span {
+  display: block;
+  font-size: 0.9em;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.modal-body input {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+

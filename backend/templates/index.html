@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}MythDB{% endblock %}
+{% block title %}
+MythDB · Home
+{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+{% endblock %}
 
 {% block content %}
+<h2>Welcome</h2>
 <p>MythDB is running.</p>
+<p>This content is injected into the <code>content</code> block.</p>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    console.log("Index page loaded");
+</script>
 {% endblock %}

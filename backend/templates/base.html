@@ -2,32 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}MythDB{% endblock %}</title>
+
+    <!-- TITLE COMES FROM CHILD TEMPLATE -->
+    <title>{% block title %}MythDB (default title){% endblock %}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- GLOBAL CSS: loaded on every page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
 
-    {% block head %}{% endblock %}
+    <!-- OPTIONAL PER-PAGE EXTRA HEAD CONTENT -->
+    {% block head %}
+    <!-- e.g. page-specific CSS goes here -->
+    {% endblock %}
 </head>
 <body>
 
-<header>
-    {% block header %}
-    <h1>MythDB</h1>
-    {% endblock %}
+<header class="topbar">
+    <div class="brand">
+        <a href="{{ url_for('admin_dashboard') }}">MythDB</a>
+    </div>
+
+    <nav class="nav">
+        <a
+          href="{{ url_for('admin_dashboard') }}"
+          class="{% if active_page == 'admin' %}active{% endif %}"
+        >
+          Admin
+        </a>
+
+        <a
+          href="{{ url_for('projects_overview') }}"
+          class="{% if active_page == 'projects' %}active{% endif %}"
+        >
+          Projects
+        </a>
+    </nav>
 </header>
 
+
 <main>
-    {% block content %}{% endblock %}
+    <!-- MAIN PAGE CONTENT GOES HERE -->
+    {% block content %}
+    <p>This text appears only if a page forgets to define content.</p>
+    {% endblock %}
 </main>
 
 <footer>
+    <!-- FOOTER DEFAULT -->
     {% block footer %}
     <small>MythDB — your world, your canon</small>
     {% endblock %}
 </footer>
 
-{% block scripts %}{% endblock %}
+<!-- PAGE-SPECIFIC SCRIPTS -->
+{% block scripts %}
+<!-- e.g. page-specific JS -->
+{% endblock %}
+
 </body>
 </html>

@@ -1,24 +1,13 @@
-import markdown
 from flask import Flask, render_template
-from pathlib import Path
+from services.markdown_service import render_markdown_file
+
 
 app = Flask(__name__)
 
 @app.route("/")
 def index():
-    md_path = Path("../data/test.md")
-
-    if md_path.exists():
-        raw_md = md_path.read_text(encoding="utf-8")
-        html = markdown.markdown(raw_md, extensions=["fenced_code"])
-    else:
-        html = "<p><strong>data/test.md not found</strong></p>"
-
-    return render_template(
-        "index.html",
-        rendered_html=html,
-        active_page="index"
-    )
+    rendered_html = render_markdown_file("test.md")
+    return render_template("index.html", rendered_html=rendered_html, active_page="index")
 
 @app.route("/admin")
 def admin_dashboard():

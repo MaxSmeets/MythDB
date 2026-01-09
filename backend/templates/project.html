@@ -1,0 +1,191 @@
+{% extends "base.html" %}
+
+{% macro render_folder(node, project_slug) %}
+<li class="tree-folder">
+  <div class="tree-row">
+    <span class="tree-name">📁 {{ node.name }}</span>
+
+    <div class="tree-actions">
+      <button type="button"
+              class="tree-btn"
+              data-action="new-folder"
+              data-parent="{{ node.path }}">
+        + Folder
+      </button>
+
+      <button type="button"
+              class="tree-btn"
+              data-action="new-article"
+              data-parent="{{ node.path }}">
+        + Article
+      </button>
+    </div>
+  </div>
+
+  {% if node.articles and node.articles|length > 0 %}
+  <ul class="tree-articles">
+    {% for a in node.articles %}
+      <li class="tree-article">📝 {{ a.title }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if node.folders and node.folders|length > 0 %}
+  <ul class="tree-children">
+    {% for f in node.folders %}
+      {{ render_folder(f, project_slug) }}
+    {% endfor %}
+  </ul>
+  {% endif %}
+</li>
+{% endmacro %}
+
+{% block title %}MythDB · {{ project.name }}{% endblock %}
+
+{% block content %}
+<div class="project-layout">
+  <aside class="sidebar" aria-label="Project folders">
+    <header class="sidebar-header">
+      <h3>Project</h3>
+      <p class="muted">{{ project.name }}</p>
+      <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
+    </header>
+
+    {% if error %}
+      <p class="alert" role="alert">{{ error }}</p>
+    {% endif %}
+
+    <section class="tree" aria-label="Folder tree">
+      <ul class="tree-root">
+        {{ render_folder(tree, project.slug) }}
+      </ul>
+    </section>
+  </aside>
+
+  <section class="project-main" aria-label="Project home">
+    <header class="page-header">
+      <p class="breadcrumb">
+        <a href="{{ url_for('projects_overview') }}">Projects</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ project.name }}</span>
+      </p>
+      <h2>{{ project.name }}</h2>
+      <p class="muted">Pick a folder on the left to create articles and structure your world.</p>
+    </header>
+
+    <section class="cards" aria-label="Project sections">
+      <a class="card card-link" href="#">
+        <h3 class="card-title">Articles</h3>
+        <p class="card-meta">Browse and search project articles (later).</p>
+      </a>
+
+      <a class="card card-link" href="#">
+        <h3 class="card-title">Media</h3>
+        <p class="card-meta">Maps, images, symbols (later).</p>
+      </a>
+
+      <a class="card card-link" href="#">
+        <h3 class="card-title">Timeline</h3>
+        <p class="card-meta">Events and chronology (later).</p>
+      </a>
+    </section>
+  </section>
+</div>
+
+<!-- New Folder Modal -->
+<dialog id="folderModal" aria-labelledby="folderModalTitle">
+  <form method="post" action="{{ url_for('project_create_folder', slug=project.slug) }}" class="modal">
+    <header class="modal-header">
+      <h3 id="folderModalTitle">New folder</h3>
+    </header>
+
+    <div class="modal-body">
+      <input type="hidden" name="parent" id="folderParent" value="" />
+
+      <label>
+        <span>Folder name</span>
+        <input name="name" type="text" required placeholder="e.g. Locations" />
+      </label>
+
+      <p class="muted"><small>This will be created inside the selected folder.</small></p>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" data-close="folderModal">Cancel</button>
+      <button type="submit">Create</button>
+    </footer>
+  </form>
+</dialog>
+
+<!-- New Article Modal -->
+<dialog id="articleModal" aria-labelledby="articleModalTitle">
+  <form method="post" action="{{ url_for('project_create_article', slug=project.slug) }}" class="modal">
+    <header class="modal-header">
+      <h3 id="articleModalTitle">New article</h3>
+    </header>
+
+    <div class="modal-body">
+      <input type="hidden" name="parent" id="articleParent" value="" />
+
+      <label>
+        <span>Article title</span>
+        <input name="title" type="text" required placeholder="e.g. The Ashen Serpents" />
+      </label>
+
+      <p class="muted"><small>This will create a <code>.md</code> file in the selected folder.</small></p>
+    </div>
+
+    <footer class="modal-footer">
+      <button type="button" data-close="articleModal">Cancel</button>
+      <button type="submit">Create</button>
+    </footer>
+  </form>
+</dialog>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const folderModal = document.getElementById("folderModal");
+  const articleModal = document.getElementById("articleModal");
+  const folderParent = document.getElementById("folderParent");
+  const articleParent = document.getElementById("articleParent");
+
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-action]");
+    if (!btn) return;
+
+    const parent = btn.getAttribute("data-parent") || "";
+    const action = btn.getAttribute("data-action");
+
+    if (action === "new-folder") {
+      folderParent.value = parent;
+      folderModal.showModal();
+      folderModal.querySelector('input[name="name"]').focus();
+    }
+
+    if (action === "new-article") {
+      articleParent.value = parent;
+      articleModal.showModal();
+      articleModal.querySelector('input[name="title"]').focus();
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    const closeBtn = e.target.closest("[data-close]");
+    if (!closeBtn) return;
+    const id = closeBtn.getAttribute("data-close");
+    document.getElementById(id).close();
+  });
+
+  // Click outside to close dialogs
+  for (const modal of [folderModal, articleModal]) {
+    modal.addEventListener("click", (e) => {
+      const rect = modal.getBoundingClientRect();
+      const clickedInDialog =
+        rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
+        rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
+      if (!clickedInDialog) modal.close();
+    });
+  }
+</script>
+{% endblock %}

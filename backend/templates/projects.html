@@ -7,7 +7,9 @@
   <h2>Projects</h2>
   <p>Create and manage your worlds, campaigns, or settings.</p>
 </header>
-
+{% if error %}
+  <p class="alert" role="alert">{{ error }}</p>
+{% endif %}
 <section class="toolbar" aria-label="Project actions">
   <button type="button" id="openProjectModal">New</button>
 </section>
@@ -15,12 +17,13 @@
 <section aria-label="Project list" class="cards">
   {% if projects and projects|length > 0 %}
     {% for p in projects %}
-      <article class="card">
+      <a class="card card-link" href="{{ url_for('project_home', slug=p.slug) }}">
         <header class="card-header">
           <h3 class="card-title">{{ p.name }}</h3>
         </header>
         <p class="card-meta"><strong>Genre:</strong> {{ p.genre }}</p>
-      </article>
+        <p class="card-subtle">Open project →</p>
+      </a>
     {% endfor %}
   {% else %}
     <p class="muted">No projects yet, click <strong>New</strong> to create one.</p>

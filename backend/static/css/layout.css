@@ -139,3 +139,128 @@ dialog::backdrop {
   margin-top: 1rem;
 }
 
+.alert {
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 10px;
+  background: rgba(170, 12, 12, 0.2);
+  margin: 0 0 1rem 0;
+}
+
+.card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.card-link:hover {
+  border-color: rgba(0,0,0,0.28);
+}
+
+.card-subtle {
+  margin: 0.75rem 0 0 0;
+  opacity: 0.6;
+}
+
+.breadcrumb {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95em;
+  opacity: 0.75;
+}
+
+.breadcrumb a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+.project-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.sidebar {
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  background: white;
+}
+
+.sidebar-header h3 {
+  margin: 0 0 0.25rem 0;
+}
+
+.sidebar-header .muted {
+  margin: 0.15rem 0;
+}
+
+.project-main {
+  min-width: 0;
+}
+
+.tree-root,
+.tree-children,
+.tree-articles {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.tree-folder {
+  margin: 0.5rem 0;
+}
+
+.tree-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.tree-name {
+  font-weight: 600;
+}
+
+.tree-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.tree-btn {
+  padding: 0.25rem 0.45rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.03);
+  cursor: pointer;
+}
+
+.tree-btn:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+.tree-children {
+  padding-left: 1rem;
+  margin-top: 0.35rem;
+  border-left: 1px solid rgba(0,0,0,0.12);
+}
+
+.tree-articles {
+  padding-left: 1rem;
+  margin-top: 0.35rem;
+  opacity: 0.85;
+}
+
+.tree-article {
+  margin: 0.25rem 0;
+}
+
+/* Small screens */
+@media (max-width: 900px) {
+  .project-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+

@@ -16,7 +16,7 @@ def _safe_name(name: str) -> str:
     return name
 
 
-def _slugify(name: str) -> str:
+def _filename_slugify(name: str) -> str:
     s = (name or "").strip().lower()
     s = re.sub(r"[^a-z0-9\s-]", "", s)
     s = re.sub(r"[\s_-]+", "-", s).strip("-")
@@ -103,7 +103,7 @@ def create_article(project: dict[str, Any], parent_rel: str, title: str) -> Path
     if not title:
         raise ValueError("Article title is required.")
 
-    filename = f"{_slugify(title)}.md"
+    filename = f"{_filename_slugify(title)}.md"
     target = parent / filename
 
     if target.exists():

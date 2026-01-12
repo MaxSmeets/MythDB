@@ -262,5 +262,88 @@ dialog::backdrop {
   }
 }
 
+.landing-header {
+  margin-bottom: 1rem;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem 0;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.2);
+  background: rgba(0,0,0,0.04);
+  color: inherit;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: rgba(0,0,0,0.07);
+}
+
+.btn-secondary {
+  opacity: 0.9;
+}
+
+.landing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.landing-footer-note {
+  margin-top: 1.5rem;
+}
+
+.upload-panel {
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  padding: 1rem;
+  background: white;
+  margin-bottom: 1rem;
+}
+
+.upload-row {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.upload-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.media-card {
+  border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  margin: 0;
+}
+
+.media-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.media-caption {
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid rgba(0,0,0,0.12);
+}
 
 

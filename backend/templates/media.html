@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}MythDB · {{ project.name }} · Media{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <p class="breadcrumb">
+    <a href="{{ url_for('projects_overview') }}">Projects</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ url_for('project_home', slug=project.slug) }}">{{ project.name }}</a>
+    <span aria-hidden="true">/</span>
+    <span>Media</span>
+  </p>
+
+  <h2>Media</h2>
+  <p class="muted">Upload images to use in articles later.</p>
+</header>
+
+{% if error %}
+  <p class="alert" role="alert">{{ error }}</p>
+{% endif %}
+
+<section class="upload-panel" aria-label="Upload media">
+  <form method="post" action="{{ url_for('project_media_upload', slug=project.slug) }}" enctype="multipart/form-data">
+    <label class="upload-row">
+      <span>Choose image</span>
+      <input type="file" name="file" accept="image/*" required>
+    </label>
+
+    <div class="upload-actions">
+      <button type="submit">Upload</button>
+    </div>
+
+    <p class="muted"><small>Supported: PNG, JPG, JPEG, WEBP, GIF. Max 10 MB.</small></p>
+  </form>
+</section>
+
+<section class="media-grid" aria-label="Uploaded media">
+  {% if items and items|length > 0 %}
+    {% for item in items %}
+      <figure class="media-card">
+        <img
+          src="{{ url_for('project_media_file', slug=project.slug, filename=item.filename) }}"
+          alt="{{ item.filename }}"
+          loading="lazy"
+        >
+        <figcaption class="media-caption">
+          <code>{{ item.filename }}</code>
+        </figcaption>
+      </figure>
+    {% endfor %}
+  {% else %}
+    <p class="muted">No media yet. Upload your first image above.</p>
+  {% endif %}
+</section>
+{% endblock %}

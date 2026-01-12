@@ -6,6 +6,7 @@ from typing import Any
 
 
 BASE_PROJECTS_DIR = Path("data/projects")
+RESERVED_DIRS = {"media", ".mythdb", "_cache", "__pycache__"}
 
 
 def _safe_name(name: str) -> str:
@@ -61,6 +62,8 @@ def build_tree(root: Path) -> dict[str, Any]:
                 continue
 
             if p.is_dir():
+                if p.name in RESERVED_DIRS:
+                    continue
                 child_rel = f"{rel}/{p.name}".strip("/")
                 folders.append(walk_dir(p, child_rel))
 

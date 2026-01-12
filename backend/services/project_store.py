@@ -1,35 +1,13 @@
 from __future__ import annotations
 
-import json
 import re
-from pathlib import Path
 from datetime import datetime, timezone
 from typing import Any
 
-PROJECTS_FILE = Path("data/projects.json")
-
-
-def _ensure_data_dir() -> None:
-    PROJECTS_FILE.parent.mkdir(parents=True, exist_ok=True)
-
-
-def load_projects() -> list[dict[str, Any]]:
-    _ensure_data_dir()
-    if not PROJECTS_FILE.exists():
-        return []
-    try:
-        return json.loads(PROJECTS_FILE.read_text(encoding="utf-8"))
-    except json.JSONDecodeError:
-        return []
-
-
-def save_projects(projects: list[dict[str, Any]]) -> None:
-    _ensure_data_dir()
-    PROJECTS_FILE.write_text(json.dumps(projects, indent=2), encoding="utf-8")
+from db import db_conn
 
 
 def _normalize_name(name: str) -> str:
-    # Collapse whitespace + lower for duplicate detection
     return " ".join(name.strip().split()).lower()
 
 
@@ -44,15 +22,33 @@ def slugify(text: str) -> str:
     return s or "project"
 
 
-def _unique_slug(base_slug: str, projects: list[dict[str, Any]]) -> str:
-    existing = {p.get("slug", "") for p in projects}
-    if base_slug not in existing:
+def _slug_exists(slug: str) -> bool:
+    with db_conn() as conn:
+        row = conn.execute(
+            "SELECT 1 FROM projects WHERE slug = ? LIMIT 1;",
+            (slug,),
+        ).fetchone()
+    return row is not None
+
+
+def _unique_slug(base_slug: str) -> str:
+    if not _slug_exists(base_slug):
         return base_slug
 
     i = 2
-    while f"{base_slug}-{i}" in existing:
+    while True:
+        candidate = f"{base_slug}-{i}"
+        if not _slug_exists(candidate):
+            return candidate
         i += 1
-    return f"{base_slug}-{i}"
+
+
+def load_projects() -> list[dict[str, Any]]:
+    with db_conn() as conn:
+        rows = conn.execute(
+            "SELECT id, slug, name, genre, created_at FROM projects ORDER BY id DESC;"
+        ).fetchall()
+    return [dict(r) for r in rows]
 
 
 def add_project(name: str, genre: str) -> dict[str, Any]:
@@ -62,32 +58,36 @@ def add_project(name: str, genre: str) -> dict[str, Any]:
     if not name or not genre:
         raise ValueError("Project name and genre are required.")
 
-    projects = load_projects()
+    created_at = datetime.now(tz=timezone.utc).isoformat()
 
     # Prevent duplicate names (case-insensitive, whitespace-normalized)
     new_norm = _normalize_name(name)
-    for p in projects:
-        if _normalize_name(p.get("name", "")) == new_norm:
-            raise ValueError("A project with that name already exists.")
+    with db_conn() as conn:
+        existing_names = conn.execute("SELECT name FROM projects;").fetchall()
+        for r in existing_names:
+            if _normalize_name(r["name"]) == new_norm:
+                raise ValueError("A project with that name already exists.")
 
     base_slug = slugify(name)
-    slug = _unique_slug(base_slug, projects)
+    slug = _unique_slug(base_slug)
 
-    project = {
-        "id": f"proj_{int(datetime.now(tz=timezone.utc).timestamp())}",
-        "slug": slug,
-        "name": name,
-        "genre": genre,
-        "created_at": datetime.now(tz=timezone.utc).isoformat(),
-    }
+    with db_conn() as conn:
+        conn.execute(
+            "INSERT INTO projects (slug, name, genre, created_at) VALUES (?, ?, ?, ?);",
+            (slug, name, genre, created_at),
+        )
+        row = conn.execute(
+            "SELECT id, slug, name, genre, created_at FROM projects WHERE slug = ? LIMIT 1;",
+            (slug,),
+        ).fetchone()
 
-    projects.append(project)
-    save_projects(projects)
-    return project
+    return dict(row)
+
 
 def get_project_by_slug(slug: str) -> dict[str, Any] | None:
-    projects = load_projects()
-    for p in projects:
-        if p.get("slug") == slug:
-            return p
-    return None
+    with db_conn() as conn:
+        row = conn.execute(
+            "SELECT id, slug, name, genre, created_at FROM projects WHERE slug = ? LIMIT 1;",
+            (slug,),
+        ).fetchone()
+    return dict(row) if row else None

@@ -49,6 +49,10 @@
       <h3>Project</h3>
       <p class="muted">{{ project.name }}</p>
       <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
+      <a class="card card-link" href="{{ url_for('project_media', slug=project.slug) }}">
+      <h3 class="card-title">Media</h3>
+      <p class="card-meta">Upload maps, images, symbols.</p>
+    </a>
     </header>
 
     {% if error %}

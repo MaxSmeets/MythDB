@@ -346,4 +346,31 @@ dialog::backdrop {
   border-top: 1px solid rgba(0,0,0,0.12);
 }
 
+.modal-body select {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.2);
+  background: white;
+}
 
+.article-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.article-side .card {
+  margin-bottom: 1rem;
+}
+
+.article-body {
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .article-layout {
+    grid-template-columns: 1fr;
+  }
+}

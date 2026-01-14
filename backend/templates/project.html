@@ -25,7 +25,9 @@
   {% if node.articles and node.articles|length > 0 %}
   <ul class="tree-articles">
     {% for a in node.articles %}
-      <li class="tree-article">📝 {{ a.title }}</li>
+      <li class="tree-article">
+        📝 <a href="{{ url_for('project_article_view', slug=project.slug, path=a.path) }}">{{ a.title }}</a>
+      </li>
     {% endfor %}
   </ul>
   {% endif %}
@@ -136,8 +138,18 @@
         <input name="title" type="text" required placeholder="e.g. The Ashen Serpents" />
       </label>
 
+      <label>
+        <span>Type</span>
+        <select name="type_key" required>
+          {% for t in types %}
+            <option value="{{ t.key }}">{{ t.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
+
       <p class="muted"><small>This will create a <code>.md</code> file in the selected folder.</small></p>
     </div>
+
 
     <footer class="modal-footer">
       <button type="button" data-close="articleModal">Cancel</button>

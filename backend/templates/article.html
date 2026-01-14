@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}MythDB · {{ project.name }} · {{ article.title }}{% endblock %}
+
+{% block content %}
+<header class="page-header">
+  <p class="breadcrumb">
+    <a href="{{ url_for('projects_overview') }}">Projects</a>
+    <span aria-hidden="true">/</span>
+    <a href="{{ url_for('project_home', slug=project.slug) }}">{{ project.name }}</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ article.title }}</span>
+  </p>
+
+  <h2>{{ article.title }}</h2>
+  <p class="muted">
+    <strong>Type:</strong> {{ article.type_name }}
+    <span aria-hidden="true">·</span>
+    <strong>Path:</strong> <code>{{ article.body_path }}</code>
+  </p>
+</header>
+
+<section class="article-layout">
+  <aside class="article-side" aria-label="Article metadata">
+    <div class="card">
+      <h3 class="card-title">Metadata</h3>
+      <p class="card-meta"><strong>ID:</strong> {{ article.id }}</p>
+      <p class="card-meta"><strong>Slug:</strong> {{ article.slug }}</p>
+      <p class="card-meta"><strong>Created:</strong> {{ article.created_at }}</p>
+      <p class="card-meta"><strong>Updated:</strong> {{ article.updated_at }}</p>
+    </div>
+
+    <div class="card">
+      <h3 class="card-title">Structured fields</h3>
+      <p class="card-meta muted">Coming next (field definitions + values).</p>
+    </div>
+  </aside>
+
+  <article class="article-body markdown" aria-label="Article body">
+    {{ rendered_html | safe }}
+  </article>
+</section>
+{% endblock %}

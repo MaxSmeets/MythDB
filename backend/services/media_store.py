@@ -5,14 +5,14 @@ from pathlib import Path
 from typing import Any
 from werkzeug.utils import secure_filename
 
-from services.project_fs import get_project_root
+from services.project_fs import get_project_dir
 
 
 ALLOWED_IMAGE_EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}  # keep it simple for v0
 
 
 def get_media_dir(project: dict[str, Any]) -> Path:
-    root = get_project_root(project)
+    root = get_project_dir(project)
     media_dir = root / "media"
     media_dir.mkdir(parents=True, exist_ok=True)
     return media_dir

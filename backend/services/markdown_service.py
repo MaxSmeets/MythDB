@@ -10,7 +10,7 @@ DEFAULT_MD_EXTENSIONS = [
     "tables",
     "fenced_code",
     "footnotes",
-    "toc",
+    "toc"
 ]
 
 

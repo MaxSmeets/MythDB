@@ -7,10 +7,12 @@
     <title>{% block title %}MythDB (default title){% endblock %}</title>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
 
     <!-- GLOBAL CSS: loaded on every page -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
 
     <!-- OPTIONAL PER-PAGE EXTRA HEAD CONTENT -->
     {% block head %}
@@ -22,7 +24,7 @@
 
   <header class="topbar">
       <div class="brand">
-          <a href="{{ url_for('index') }}">MythDB</a>
+          <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='mythdb.png') }}" style="height: 40px;" alt="MythDB Logo"></a>
       </div>
 
       <nav class="nav">

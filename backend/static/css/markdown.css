@@ -1,6 +1,6 @@
 /* ===========================
    MythDB Markdown Styling
-   Change variables below to adjust the entire look quickly.
+   Dark mode only
    =========================== */
 
 :root {
@@ -12,26 +12,12 @@
   --md-line-height: 1.65;
 
   /* Spacing */
-  --md-block-gap: 1rem;          /* space between paragraphs/blocks */
-  --md-heading-top: 1.6rem;      /* space above headings */
-  --md-heading-bottom: 0.6rem;   /* space below headings */
+  --md-block-gap: 1rem;
+  --md-heading-top: 1.6rem;
+  --md-heading-bottom: 0.6rem;
 
-  /* Colors (neutral defaults) */
-  --md-text: rgba(0, 0, 0, 0.9);
-  --md-muted: rgba(0, 0, 0, 0.65);
-  --md-border: rgba(0, 0, 0, 0.15);
-  --md-bg-soft: rgba(0, 0, 0, 0.06);
-  --md-link: rgba(0, 0, 0, 0.9);
-  --md-link-hover: rgba(0, 0, 0, 1);
-
-  /* Radius */
-  --md-radius-sm: 4px;
-  --md-radius-md: 8px;
-
-  /* Lists */
+  /* Lists & tables */
   --md-list-indent: 1.25rem;
-
-  /* Tables */
   --md-table-cell-pad-y: 0.5rem;
   --md-table-cell-pad-x: 0.75rem;
 
@@ -40,26 +26,22 @@
   --md-code-block-pad: 1rem;
 
   /* Blockquote */
-  --md-quote-border: rgba(0, 0, 0, 0.25);
-  --md-quote-bg: rgba(0, 0, 0, 0.03);
   --md-quote-pad-y: 0.5rem;
   --md-quote-pad-x: 0.9rem;
-
-  /* Horizontal rule */
-  --md-hr: rgba(0, 0, 0, 0.15);
 }
 
 /* ===========================
    Container
    =========================== */
+
 .markdown {
   font-family: var(--md-font-body);
   font-size: var(--md-font-size);
   line-height: var(--md-line-height);
-  color: var(--md-text);
+  color: var(--text-secondary);
 }
 
-/* Keep content from blowing out the layout */
+/* Constrain media */
 .markdown img,
 .markdown table,
 .markdown pre {
@@ -69,6 +51,7 @@
 /* ===========================
    Headings
    =========================== */
+
 .markdown h1,
 .markdown h2,
 .markdown h3,
@@ -77,6 +60,8 @@
 .markdown h6 {
   margin: var(--md-heading-top) 0 var(--md-heading-bottom);
   line-height: 1.2;
+  color: var(--text-primary);
+  font-weight: 700;
 }
 
 .markdown h1 { font-size: 2.0em; }
@@ -84,18 +69,19 @@
 .markdown h3 { font-size: 1.3em; }
 .markdown h4 { font-size: 1.15em; }
 .markdown h5 { font-size: 1.05em; }
-.markdown h6 { font-size: 1.0em; color: var(--md-muted); }
+.markdown h6 { font-size: 1.0em; color: var(--text-muted); }
 
-/* Optional subtle divider under top headings */
+/* Subtle divider under top headings */
 .markdown h1,
 .markdown h2 {
   padding-bottom: 0.25rem;
-  border-bottom: 1px solid var(--md-border);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 /* ===========================
-   Paragraphs & common blocks
+   Paragraphs & Block Elements
    =========================== */
+
 .markdown p,
 .markdown ul,
 .markdown ol,
@@ -109,39 +95,46 @@
 /* ===========================
    Links
    =========================== */
+
 .markdown a {
-  color: var(--md-link);
+  color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
+  transition: color 0.2s;
 }
 
 .markdown a:hover {
-  color: var(--md-link-hover);
+  color: var(--accent-hover);
 }
 
 /* ===========================
-   Emphasis & inline elements
+   Emphasis & Inline
    =========================== */
-.markdown strong { font-weight: 700; }
-.markdown em { font-style: italic; }
+
+.markdown strong {
+  font-weight: 700;
+}
+
+.markdown em {
+  font-style: italic;
+}
 
 .markdown code {
   font-family: var(--md-font-mono);
   font-size: var(--md-code-font-size);
-  background: var(--md-bg-soft);
+  background: var(--bg-elevated);
   padding: 0.12em 0.35em;
-  border-radius: var(--md-radius-sm);
-}
-
-/* Avoid inline-code wrapping weirdness */
-.markdown code {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-primary);
   word-break: break-word;
 }
 
 /* ===========================
    Lists
    =========================== */
+
 .markdown ul,
 .markdown ol {
   padding-left: var(--md-list-indent);
@@ -158,101 +151,134 @@
 }
 
 /* ===========================
-   Horizontal rule
+   Horizontal Rule
    =========================== */
+
 .markdown hr {
   border: none;
-  border-top: 1px solid var(--md-hr);
+  border-top: 1px solid var(--border-subtle);
   margin: calc(var(--md-block-gap) * 1.25) 0;
 }
 
 /* ===========================
    Blockquotes
    =========================== */
+
 .markdown blockquote {
-  border-left: 4px solid var(--md-quote-border);
-  background: var(--md-quote-bg);
+  border-left: 4px solid var(--accent);
+  background: var(--bg-elevated);
   padding: var(--md-quote-pad-y) var(--md-quote-pad-x);
-  border-radius: var(--md-radius-md);
-  color: var(--md-muted);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
 }
 
 .markdown blockquote p:last-child {
   margin-bottom: 0;
 }
 
+.markdown blockquote strong {
+  color: var(--text-secondary);
+}
+
 /* ===========================
-   Code blocks
+   Code Blocks
    =========================== */
+
 .markdown pre {
-  background: var(--md-bg-soft);
+  background: var(--bg-elevated);
   padding: var(--md-code-block-pad);
-  border-radius: var(--md-radius-md);
+  border-radius: var(--radius-md);
   overflow-x: auto;
-  border: 1px solid var(--md-border);
+  border: 1px solid var(--border-subtle);
 }
 
 .markdown pre code {
   background: none;
   padding: 0;
+  border: none;
   border-radius: 0;
   display: block;
   line-height: 1.55;
   font-size: 0.95em;
   white-space: pre;
+  color: var(--text-primary);
 }
 
 /* ===========================
    Tables
    =========================== */
+
 .markdown table {
   width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
-  border: 1px solid var(--md-border);
-  border-radius: var(--md-radius-md);
-  overflow: hidden; /* helps radius on some browsers */
+  border: 2px solid var(--accent);
+  background: var(--bg-surface-2);
+  overflow: hidden;
 }
 
+/* First column fixed width */
+.markdown th:first-child,
+.markdown td:first-child {
+  width: auto;
+}
+
+/* Table cells */
 .markdown th,
 .markdown td {
-  padding: var(--md-table-cell-pad-y) var(--md-table-cell-pad-x);
-  border-bottom: 1px solid var(--md-border);
-  border-right: 1px solid var(--md-border);
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-subtle);
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
-.markdown th:last-child,
-.markdown td:last-child {
-  border-right: none;
-}
-
-.markdown tr:last-child td {
-  border-bottom: none;
-}
-
+/* Table header */
 .markdown th {
   font-weight: 700;
-  background: rgba(0, 0, 0, 0.035);
+  background: var(--bg-elevated);
+  color: var(--accent);
+  border-bottom: 2px solid var(--accent);
+  padding: 1rem;
+}
+
+/* Alternating row backgrounds for readability */
+.markdown tbody tr:nth-child(odd) td {
+  background: var(--bg-surface-2);
+}
+
+.markdown tbody tr:nth-child(even) td {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Hover effect on rows */
+.markdown tbody tr:hover td {
+  background: var(--bg-elevated);
 }
 
 /* ===========================
    Images
    =========================== */
+
 .markdown img {
   height: auto;
-  border-radius: var(--md-radius-md);
-  border: 1px solid var(--md-border);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  max-width: 100%;
 }
 
 /* ===========================
-   Footnotes (Python-Markdown)
+   Footnotes
    =========================== */
+
 .markdown .footnote {
-  border-top: 1px solid var(--md-border);
+  border-top: 1px solid var(--border-subtle);
   margin-top: calc(var(--md-block-gap) * 1.25);
   padding-top: var(--md-block-gap);
-  color: var(--md-muted);
+  color: var(--text-muted);
+  font-size: 0.95em;
 }
 
 .markdown .footnote ol {
@@ -263,21 +289,20 @@
   margin: 0.35rem 0;
 }
 
-/* Footnote backlinks */
 .markdown .footnote a {
   text-decoration: underline;
 }
 
 /* ===========================
-   Small niceties
+   Special Cases
    =========================== */
 
-/* Prevent huge first heading from sticking to top too hard */
+/* First heading doesn't need top margin */
 .markdown h1:first-child {
   margin-top: 0;
 }
 
-/* Tighter spacing for headings followed by lists/quotes */
+/* Tighter spacing after headings */
 .markdown h1 + ul,
 .markdown h2 + ul,
 .markdown h3 + ul,

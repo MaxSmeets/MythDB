@@ -22,6 +22,16 @@ def is_allowed_image(filename: str) -> bool:
     ext = Path(filename).suffix.lower()
     return ext in ALLOWED_IMAGE_EXTS
 
+def rewrite_media_urls(html: str, project_slug: str) -> str:
+    """
+    Rewrite relative media references from markdown:
+      src="media/foo.png" -> src="/projects/<slug>/media/files/foo.png"
+    """
+    return re.sub(
+        r'src="media/([^"]+)"',
+        f'src="/projects/{project_slug}/media/files/\\1"',
+        html
+    )
 
 def _dedupe_filename(target_dir: Path, filename: str) -> str:
     """

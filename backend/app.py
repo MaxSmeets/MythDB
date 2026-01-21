@@ -4,20 +4,10 @@ import markdown as md
 from schema import init_schema
 from services.project_store import load_projects, add_project, get_project_by_slug
 from services.project_fs import get_project_dir, get_content_root, build_tree, create_folder, article_body_path, write_article_stub
-from services.media_store import list_media, save_uploaded_image, get_media_dir
+from services.media_store import list_media, save_uploaded_image, get_media_dir, rewrite_media_urls
 from services.article_store import list_article_types, create_article as db_create_article, get_article_by_id
 import re
 
-def rewrite_media_urls(html: str, project_slug: str) -> str:
-    """
-    Rewrite relative media references from markdown:
-      src="media/foo.png" -> src="/projects/<slug>/media/files/foo.png"
-    """
-    return re.sub(
-        r'src="media/([^"]+)"',
-        f'src="/projects/{project_slug}/media/files/\\1"',
-        html
-    )
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB

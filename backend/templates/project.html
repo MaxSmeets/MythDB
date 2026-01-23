@@ -3,39 +3,44 @@
 {% macro render_folder(node, project_slug) %}
 {% if node.folders and node.folders|length > 0 %}
   {% for folder in node.folders %}
-    <li class="tree-folder">
+    <li class="tree-folder" data-folder-id="{{ folder.id }}">
       <div class="tree-row">
+        <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="true">
+          <span class="toggle-icon">▼</span>
+        </button>
         <span class="tree-name">📁 {{ folder.name }}</span>
 
-        <div class="tree-actions">
-          <button type="button"
-                  class="tree-btn"
-                  data-action="new-folder"
-                  data-parent-id="{{ folder.id }}">
-            + Folder
-          </button>
-
-          <button type="button"
-                  class="tree-btn"
-                  data-action="new-article"
-                  data-parent-id="{{ folder.id }}">
-            + Article
-          </button>
+        <div class="tree-folder-menu">
+          <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="{{ folder.id }}">⋮</button>
+          <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
+            <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
+            <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
+            <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
+            <button class="dropdown-item dropdown-danger" data-action="delete-folder" data-folder-id="{{ folder.id }}" onclick="return confirm('Delete folder? This will delete all contents.');">🗑️ Delete</button>
+          </div>
         </div>
       </div>
 
       {% if folder.articles and folder.articles|length > 0 %}
-      <ul class="tree-articles">
+      <ul class="tree-articles tree-collapsible">
         {% for article in folder.articles %}
           <li class="tree-article">
-            📝 <a href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}">{{ article.title }}</a>
+            <div class="tree-article-row">
+              <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}">{{ article.title }}</a></span>
+              <div class="tree-article-actions">
+                <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
+                <form method="post" action="{{ url_for('articles.delete_article_route', slug=project_slug, article_id=article.id) }}" style="margin: 0; display: inline;">
+                  <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
+                </form>
+              </div>
+            </div>
           </li>
         {% endfor %}
       </ul>
       {% endif %}
 
       {% if folder.folders and folder.folders|length > 0 %}
-      <ul class="tree-children">
+      <ul class="tree-children tree-collapsible">
         {{ render_folder(folder, project_slug) }}
       </ul>
       {% endif %}
@@ -65,57 +70,97 @@
 
     <section class="tree" aria-label="Folder tree">
       <ul class="tree-root">
-        {% if tree.folders and tree.folders|length > 0 %}
-          {{ render_folder(tree, project.slug) }}
-        {% endif %}
-        
-        {% if tree.articles and tree.articles|length > 0 %}
-        <li class="tree-folder">
+        {% set root_folder = none %}
+        {% for folder in tree.folders if folder.slug == 'root' %}
+          {% set root_folder = folder %}
+        {% endfor %}
+
+        <!-- Root Section: Always at top, no folder styling -->
+        <li class="tree-section">
           <div class="tree-row">
-            <span class="tree-name">📋 Root Articles</span>
-            <div class="tree-actions">
-              <button type="button"
-                      class="tree-btn"
-                      data-action="new-folder"
-                      data-parent-id="">
-                + Folder
-              </button>
-              <button type="button"
-                      class="tree-btn"
-                      data-action="new-article"
-                      data-parent-id="">
-                + Article
-              </button>
+            <span class="tree-name">📋 Root</span>
+            <div class="tree-folder-menu">
+              <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="">⋮</button>
+              <div class="tree-dropdown" data-folder-id="">
+                <button class="dropdown-item" data-action="new-folder" data-parent-id="">+ Folder</button>
+                <button class="dropdown-item" data-action="new-article" data-parent-id="">+ Article</button>
+              </div>
             </div>
           </div>
+
+          <!-- Root level articles -->
+          {% if tree.articles and tree.articles|length > 0 %}
           <ul class="tree-articles">
             {% for article in tree.articles %}
               <li class="tree-article">
-                📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a>
+                <div class="tree-article-row">
+                  <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
+                  <div class="tree-article-actions">
+                    <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
+                    <form method="post" action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}" style="margin: 0; display: inline;">
+                      <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
+                    </form>
+                  </div>
+                </div>
               </li>
             {% endfor %}
           </ul>
+          {% endif %}
+
+          <!-- Root folder's subfolders (if any) -->
+          {% if root_folder and root_folder.folders and root_folder.folders|length > 0 %}
+          <ul class="tree-children">
+            {{ render_folder(root_folder, project.slug) }}
+          </ul>
+          {% endif %}
         </li>
-        {% else %}
-          <li class="tree-folder">
-            <div class="tree-row">
-              <span class="tree-name">📋 Root</span>
-              <div class="tree-actions">
-                <button type="button"
-                        class="tree-btn"
-                        data-action="new-folder"
-                        data-parent-id="">
-                  + Folder
+
+        <!-- Other folders (exclude Root) -->
+        {% if tree.folders and tree.folders|length > 0 %}
+          {% for folder in tree.folders if folder.slug != 'root' %}
+            <li class="tree-folder" data-folder-id="{{ folder.id }}">
+              <div class="tree-row">
+                <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="true">
+                  <span class="toggle-icon">▼</span>
                 </button>
-                <button type="button"
-                        class="tree-btn"
-                        data-action="new-article"
-                        data-parent-id="">
-                  + Article
-                </button>
+                <span class="tree-name">📁 {{ folder.name }}</span>
+
+                <div class="tree-folder-menu">
+                  <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="{{ folder.id }}">⋮</button>
+                  <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
+                    <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
+                    <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
+                    <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
+                    <button class="dropdown-item dropdown-danger" data-action="delete-folder" data-folder-id="{{ folder.id }}" onclick="return confirm('Delete folder? This will delete all contents.');">🗑️ Delete</button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </li>
+
+              {% if folder.articles and folder.articles|length > 0 %}
+              <ul class="tree-articles tree-collapsible">
+                {% for article in folder.articles %}
+                  <li class="tree-article">
+                    <div class="tree-article-row">
+                      <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
+                      <div class="tree-article-actions">
+                        <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
+                        <form method="post" action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}" style="margin: 0; display: inline;">
+                          <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
+                        </form>
+                      </div>
+                    </div>
+                  </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+
+              {% if folder.folders and folder.folders|length > 0 %}
+              <ul class="tree-children tree-collapsible">
+                {{ render_folder(folder, project.slug) }}
+              </ul>
+              {% endif %}
+            </li>
+          {% endfor %}
         {% endif %}
       </ul>
     </section>

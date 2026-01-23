@@ -156,3 +156,9 @@ def touch_article(article_id: int) -> None:
     now = datetime.now(tz=timezone.utc).isoformat()
     with db_conn() as conn:
         conn.execute("UPDATE articles SET updated_at = ? WHERE id = ?;", (now, article_id))
+
+
+def delete_article(article_id: int) -> None:
+    """Delete an article from the database."""
+    with db_conn() as conn:
+        conn.execute("DELETE FROM articles WHERE id = ?;", (article_id,))

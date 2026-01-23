@@ -8,6 +8,7 @@ from services.article_store import (
     create_article as db_create_article,
     get_article_full,
     update_article_content,
+    delete_article,
     list_article_types,
 )
 from services.media_store import rewrite_media_urls
@@ -99,3 +100,21 @@ def edit_article(slug: str, article_id: int):
         return redirect(
             url_for("articles.article_view", slug=slug, article_id=article_id, error=str(e))
         )
+
+
+@bp.route("/<slug>/a/<int:article_id>/delete", methods=["POST"])
+def delete_article_route(slug: str, article_id: int):
+    """Delete an article."""
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    article = get_article_full(article_id)
+    if not article or article["project_id"] != int(project["id"]):
+        abort(404)
+
+    try:
+        delete_article(article_id)
+        return redirect(url_for("projects.project_home", slug=slug))
+    except Exception as e:
+        return redirect(url_for("projects.project_home", slug=slug, error=str(e)))

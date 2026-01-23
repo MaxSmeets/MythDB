@@ -395,20 +395,21 @@ dialog::backdrop {
 
 .tree-row {
   display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
   align-items: center;
+  gap: var(--spacing-sm);
   padding: var(--spacing-xs) 0;
 }
 
 .tree-name {
   font-weight: 600;
   color: var(--text-primary);
+  flex: 0 1 auto;
 }
 
 .tree-actions {
   display: flex;
   gap: 0.35rem;
+  margin-left: auto;
 }
 
 .tree-btn {

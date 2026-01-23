@@ -205,16 +205,36 @@ def list_articles_in_folder(folder_id: Optional[int], project_id: int) -> list[d
 
 def delete_folder(folder_id: int) -> None:
     """
-    Delete a folder (cascade deletes all articles in it).
-    Subfolder articles are preserved at parent level.
+    Delete a folder only if it's empty (no articles or subfolders).
+    
+    Args:
+        folder_id: The folder to delete
+        
+    Raises:
+        ValueError: If folder is not found or is not empty
     """
-    # This is handled by DB cascade delete, but we can add validation here
     folder = get_folder_by_id(folder_id)
     if not folder:
         raise ValueError("Folder not found.")
     
     with db_conn() as conn:
-        # Move all articles from subfolders to this folder's parent
-        # (optional - depends on your UX preference)
-        # For now, cascade delete handles it
+        # Check if folder has any articles
+        articles = conn.execute(
+            "SELECT COUNT(*) as count FROM articles WHERE folder_id = ?;",
+            (folder_id,),
+        ).fetchone()
+        
+        if articles and articles['count'] > 0:
+            raise ValueError(f"Cannot delete folder '{folder['name']}' - it contains {articles['count']} article(s). Please delete all articles first.")
+        
+        # Check if folder has any subfolders
+        subfolders = conn.execute(
+            "SELECT COUNT(*) as count FROM folders WHERE parent_id = ?;",
+            (folder_id,),
+        ).fetchone()
+        
+        if subfolders and subfolders['count'] > 0:
+            raise ValueError(f"Cannot delete folder '{folder['name']}' - it contains {subfolders['count']} subfolder(s). Please delete all subfolders first.")
+        
+        # Folder is empty, safe to delete
         conn.execute("DELETE FROM folders WHERE id = ?;", (folder_id,))

@@ -16,7 +16,9 @@
             <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
             <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
             <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
-            <button class="dropdown-item dropdown-danger" data-action="delete-folder" data-folder-id="{{ folder.id }}" onclick="return confirm('Delete folder? This will delete all contents.');">🗑️ Delete</button>
+            <form method="post" action="{{ url_for('folders.delete_folder_route', slug=project_slug, folder_id=folder.id) }}" style="margin: 0; display: inline;">
+              <button type="submit" class="dropdown-item dropdown-danger" onclick="return confirm('Delete folder? It must be empty.');">🗑️ Delete</button>
+            </form>
           </div>
         </div>
       </div>
@@ -131,7 +133,9 @@
                     <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
                     <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
                     <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
-                    <button class="dropdown-item dropdown-danger" data-action="delete-folder" data-folder-id="{{ folder.id }}" onclick="return confirm('Delete folder? This will delete all contents.');">🗑️ Delete</button>
+                    <form method="post" action="{{ url_for('folders.delete_folder_route', slug=project.slug, folder_id=folder.id) }}" style="margin: 0; display: inline;">
+                      <button type="submit" class="dropdown-item dropdown-danger" onclick="return confirm('Delete folder? It must be empty.');">🗑️ Delete</button>
+                    </form>
                   </div>
                 </div>
               </div>

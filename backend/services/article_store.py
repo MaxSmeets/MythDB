@@ -55,12 +55,23 @@ def unique_article_slug(project_id: int, base_slug: str) -> str:
 def create_article(
     *,
     project_id: int,
+    folder_id: int | None,
     type_key: str,
     title: str,
-    body_path: str,
+    body_content: str = "",
 ) -> dict[str, Any]:
     """
-    Creates the DB record for an article. Does not write the markdown file.
+    Creates an article record with markdown content stored in the database.
+    
+    Args:
+        project_id: The project this article belongs to
+        folder_id: The folder this article is in (None for root)
+        type_key: The article type (npc, location, etc.)
+        title: Article title
+        body_content: Markdown content (defaults to empty)
+    
+    Returns:
+        Created article dict with all metadata
     """
     title = (title or "").strip()
     if not title:
@@ -77,14 +88,14 @@ def create_article(
     with db_conn() as conn:
         conn.execute(
             """
-            INSERT INTO articles (project_id, type_id, slug, title, body_path, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO articles (project_id, folder_id, type_id, slug, title, body_content, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?);
             """,
-            (project_id, type_row["id"], slug, title, body_path, now, now),
+            (project_id, folder_id, type_row["id"], slug, title, body_content, now, now),
         )
         row = conn.execute(
             """
-            SELECT a.id, a.project_id, a.slug, a.title, a.body_path, a.created_at, a.updated_at,
+            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content, a.created_at, a.updated_at,
                    t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
@@ -101,7 +112,7 @@ def get_article_by_id(article_id: int) -> Optional[dict[str, Any]]:
     with db_conn() as conn:
         row = conn.execute(
             """
-            SELECT a.id, a.project_id, a.slug, a.title, a.body_path, a.created_at, a.updated_at,
+            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.created_at, a.updated_at,
                    t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
@@ -111,6 +122,34 @@ def get_article_by_id(article_id: int) -> Optional[dict[str, Any]]:
             (article_id,),
         ).fetchone()
     return dict(row) if row else None
+
+
+def get_article_full(article_id: int) -> Optional[dict[str, Any]]:
+    """Get article with full body_content."""
+    with db_conn() as conn:
+        row = conn.execute(
+            """
+            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content,
+                   a.created_at, a.updated_at,
+                   t.key AS type_key, t.name AS type_name
+            FROM articles a
+            JOIN article_types t ON t.id = a.type_id
+            WHERE a.id = ?
+            LIMIT 1;
+            """,
+            (article_id,),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def update_article_content(article_id: int, body_content: str) -> None:
+    """Update the markdown content of an article."""
+    now = datetime.now(tz=timezone.utc).isoformat()
+    with db_conn() as conn:
+        conn.execute(
+            "UPDATE articles SET body_content = ?, updated_at = ? WHERE id = ?;",
+            (body_content, now, article_id),
+        )
 
 
 def touch_article(article_id: int) -> None:

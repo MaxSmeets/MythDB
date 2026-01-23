@@ -5,19 +5,24 @@
 {% block content %}
 <header class="page-header">
   <p class="breadcrumb">
-    <a href="{{ url_for('projects_overview') }}">Projects</a>
+    <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
     <span aria-hidden="true">/</span>
-    <a href="{{ url_for('project_home', slug=project.slug) }}">{{ project.name }}</a>
+    <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
     <span aria-hidden="true">/</span>
     <span>{{ article.title }}</span>
   </p>
 
-  <h2>{{ article.title }}</h2>
-  <p class="muted">
-    <strong>Type:</strong> {{ article.type_name }}
-    <span aria-hidden="true">·</span>
-    <strong>Path:</strong> <code>{{ article.body_path }}</code>
-  </p>
+  <div class="article-header-row">
+    <div>
+      <h2>{{ article.title }}</h2>
+      <p class="muted">
+        <strong>Type:</strong> {{ article.type_name }}
+        <span aria-hidden="true">·</span>
+        <strong>Slug:</strong> <code>{{ article.slug }}</code>
+      </p>
+    </div>
+    <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
+  </div>
 </header>
 
 <section class="article-layout">
@@ -36,8 +41,65 @@
     </div>
   </aside>
 
-  <article class="article-body markdown" aria-label="Article body">
-    {{ rendered_html | safe }}
-  </article>
+  <div class="article-content">
+    <!-- Read mode -->
+    <article id="readMode" class="article-body markdown" aria-label="Article body">
+      {{ rendered_html | safe }}
+    </article>
+
+    <!-- Edit mode -->
+    <form id="editMode" method="post" action="{{ url_for('articles.edit_article', slug=project.slug, article_id=article.id) }}" class="article-editor hidden">
+      <textarea 
+        name="body_content" 
+        class="editor-textarea" 
+        required 
+        placeholder="Write your markdown here..."
+        spellcheck="false"
+      >{{ article.body_content }}</textarea>
+
+      <div class="editor-actions">
+        <button type="submit" class="btn">💾 Save</button>
+        <button type="button" id="cancelEdit" class="btn btn-secondary">Cancel</button>
+      </div>
+    </form>
+  </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const modeToggle = document.getElementById('modeToggle');
+  const readMode = document.getElementById('readMode');
+  const editMode = document.getElementById('editMode');
+  const cancelEdit = document.getElementById('cancelEdit');
+  
+  let currentMode = 'read';
+
+  modeToggle.addEventListener('click', () => {
+    if (currentMode === 'read') {
+      // Switch to edit
+      readMode.classList.add('hidden');
+      editMode.classList.remove('hidden');
+      modeToggle.textContent = '👁️ View';
+      modeToggle.dataset.mode = 'edit';
+      currentMode = 'edit';
+      editMode.querySelector('textarea').focus();
+    } else {
+      // Switch to read
+      readMode.classList.remove('hidden');
+      editMode.classList.add('hidden');
+      modeToggle.textContent = '✏️ Edit';
+      modeToggle.dataset.mode = 'read';
+      currentMode = 'read';
+    }
+  });
+
+  cancelEdit.addEventListener('click', () => {
+    // Reset textarea to original content
+    const textarea = editMode.querySelector('textarea');
+    textarea.value = textarea.defaultValue;
+    // Switch back to read mode
+    modeToggle.click();
+  });
+</script>
 {% endblock %}

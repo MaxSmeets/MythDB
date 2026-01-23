@@ -24,15 +24,15 @@
 
   <header class="topbar">
       <div class="brand">
-          <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='mythdb.png') }}" style="height: 40px;" alt="MythDB Logo"></a>
+          <a href="{{ url_for('pages.index') }}"><img src="{{ url_for('static', filename='mythdb.png') }}" style="height: 40px;" alt="MythDB Logo"></a>
       </div>
 
       <nav class="nav">
-          <a href="{{ url_for('admin_dashboard') }}"
+          <a href="{{ url_for('pages.admin_dashboard') }}"
              class="{% if active_page == 'admin' %}active{% endif %}">
               Admin
           </a>
-          <a href="{{ url_for('projects_overview') }}"
+          <a href="{{ url_for('projects.projects_overview') }}"
              class="{% if active_page == 'projects' %}active{% endif %}">
               Projects
           </a>

@@ -5,9 +5,9 @@
 {% block content %}
 <header class="page-header">
   <p class="breadcrumb">
-    <a href="{{ url_for('projects_overview') }}">Projects</a>
+    <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
     <span aria-hidden="true">/</span>
-    <a href="{{ url_for('project_home', slug=project.slug) }}">{{ project.name }}</a>
+    <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
     <span aria-hidden="true">/</span>
     <span>Media</span>
   </p>
@@ -21,7 +21,7 @@
 {% endif %}
 
 <section class="upload-panel" aria-label="Upload media">
-  <form method="post" action="{{ url_for('project_media_upload', slug=project.slug) }}" enctype="multipart/form-data">
+  <form method="post" action="{{ url_for('media.media_upload', slug=project.slug) }}" enctype="multipart/form-data">
     <label class="upload-row">
       <span>Choose image</span>
       <input type="file" name="file" accept="image/*" required>
@@ -40,7 +40,7 @@
     {% for item in items %}
       <figure class="media-card">
         <img
-          src="{{ url_for('project_media_file', slug=project.slug, filename=item.filename) }}"
+          src="{{ url_for('media.media_file', slug=project.slug, filename=item.filename) }}"
           alt="{{ item.filename }}"
           loading="lazy"
         >

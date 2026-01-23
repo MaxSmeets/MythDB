@@ -1,45 +1,47 @@
 {% extends "base.html" %}
 
 {% macro render_folder(node, project_slug) %}
-<li class="tree-folder">
-  <div class="tree-row">
-    <span class="tree-name">📁 {{ node.name }}</span>
+{% if node.folders and node.folders|length > 0 %}
+  {% for folder in node.folders %}
+    <li class="tree-folder">
+      <div class="tree-row">
+        <span class="tree-name">📁 {{ folder.name }}</span>
 
-    <div class="tree-actions">
-      <button type="button"
-              class="tree-btn"
-              data-action="new-folder"
-              data-parent="{{ node.path }}">
-        + Folder
-      </button>
+        <div class="tree-actions">
+          <button type="button"
+                  class="tree-btn"
+                  data-action="new-folder"
+                  data-parent-id="{{ folder.id }}">
+            + Folder
+          </button>
 
-      <button type="button"
-              class="tree-btn"
-              data-action="new-article"
-              data-parent="{{ node.path }}">
-        + Article
-      </button>
-    </div>
-  </div>
+          <button type="button"
+                  class="tree-btn"
+                  data-action="new-article"
+                  data-parent-id="{{ folder.id }}">
+            + Article
+          </button>
+        </div>
+      </div>
 
-  {% if node.articles and node.articles|length > 0 %}
-  <ul class="tree-articles">
-    {% for a in node.articles %}
-      <li class="tree-article">
-        📝 <a href="{{ url_for('project_article_view', slug=project.slug, path=a.path) }}">{{ a.title }}</a>
-      </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
+      {% if folder.articles and folder.articles|length > 0 %}
+      <ul class="tree-articles">
+        {% for article in folder.articles %}
+          <li class="tree-article">
+            📝 <a href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}">{{ article.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
 
-  {% if node.folders and node.folders|length > 0 %}
-  <ul class="tree-children">
-    {% for f in node.folders %}
-      {{ render_folder(f, project_slug) }}
-    {% endfor %}
-  </ul>
-  {% endif %}
-</li>
+      {% if folder.folders and folder.folders|length > 0 %}
+      <ul class="tree-children">
+        {{ render_folder(folder, project_slug) }}
+      </ul>
+      {% endif %}
+    </li>
+  {% endfor %}
+{% endif %}
 {% endmacro %}
 
 {% block title %}MythDB · {{ project.name }}{% endblock %}
@@ -51,7 +53,7 @@
       <h3>Project</h3>
       <p class="muted">{{ project.name }}</p>
       <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
-      <a class="card card-link" href="{{ url_for('project_media', slug=project.slug) }}">
+      <a class="card card-link" href="{{ url_for('media.project_media', slug=project.slug) }}">
       <h3 class="card-title">Media</h3>
       <p class="card-meta">Upload maps, images, symbols.</p>
     </a>
@@ -63,7 +65,58 @@
 
     <section class="tree" aria-label="Folder tree">
       <ul class="tree-root">
-        {{ render_folder(tree, project.slug) }}
+        {% if tree.folders and tree.folders|length > 0 %}
+          {{ render_folder(tree, project.slug) }}
+        {% endif %}
+        
+        {% if tree.articles and tree.articles|length > 0 %}
+        <li class="tree-folder">
+          <div class="tree-row">
+            <span class="tree-name">📋 Root Articles</span>
+            <div class="tree-actions">
+              <button type="button"
+                      class="tree-btn"
+                      data-action="new-folder"
+                      data-parent-id="">
+                + Folder
+              </button>
+              <button type="button"
+                      class="tree-btn"
+                      data-action="new-article"
+                      data-parent-id="">
+                + Article
+              </button>
+            </div>
+          </div>
+          <ul class="tree-articles">
+            {% for article in tree.articles %}
+              <li class="tree-article">
+                📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </li>
+        {% else %}
+          <li class="tree-folder">
+            <div class="tree-row">
+              <span class="tree-name">📋 Root</span>
+              <div class="tree-actions">
+                <button type="button"
+                        class="tree-btn"
+                        data-action="new-folder"
+                        data-parent-id="">
+                  + Folder
+                </button>
+                <button type="button"
+                        class="tree-btn"
+                        data-action="new-article"
+                        data-parent-id="">
+                  + Article
+                </button>
+              </div>
+            </div>
+          </li>
+        {% endif %}
       </ul>
     </section>
   </aside>
@@ -71,7 +124,7 @@
   <section class="project-main" aria-label="Project home">
     <header class="page-header">
       <p class="breadcrumb">
-        <a href="{{ url_for('projects_overview') }}">Projects</a>
+        <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
         <span aria-hidden="true">/</span>
         <span>{{ project.name }}</span>
       </p>
@@ -100,13 +153,13 @@
 
 <!-- New Folder Modal -->
 <dialog id="folderModal" aria-labelledby="folderModalTitle">
-  <form method="post" action="{{ url_for('project_create_folder', slug=project.slug) }}" class="modal">
+  <form method="post" action="{{ url_for('folders.create_folder_route', slug=project.slug) }}" class="modal">
     <header class="modal-header">
       <h3 id="folderModalTitle">New folder</h3>
     </header>
 
     <div class="modal-body">
-      <input type="hidden" name="parent" id="folderParent" value="" />
+      <input type="hidden" name="parent_id" id="folderParentId" value="" />
 
       <label>
         <span>Folder name</span>
@@ -125,13 +178,13 @@
 
 <!-- New Article Modal -->
 <dialog id="articleModal" aria-labelledby="articleModalTitle">
-  <form method="post" action="{{ url_for('project_create_article', slug=project.slug) }}" class="modal">
+  <form method="post" action="{{ url_for('articles.create_article', slug=project.slug) }}" class="modal">
     <header class="modal-header">
       <h3 id="articleModalTitle">New article</h3>
     </header>
 
     <div class="modal-body">
-      <input type="hidden" name="parent" id="articleParent" value="" />
+      <input type="hidden" name="folder_id" id="articleFolderId" value="" />
 
       <label>
         <span>Article title</span>
@@ -147,7 +200,7 @@
         </select>
       </label>
 
-      <p class="muted"><small>This will create a <code>.md</code> file in the selected folder.</small></p>
+      <p class="muted"><small>This will create an article in the selected folder with markdown stored in the database.</small></p>
     </div>
 
 
@@ -163,24 +216,24 @@
 <script>
   const folderModal = document.getElementById("folderModal");
   const articleModal = document.getElementById("articleModal");
-  const folderParent = document.getElementById("folderParent");
-  const articleParent = document.getElementById("articleParent");
+  const folderParentId = document.getElementById("folderParentId");
+  const articleFolderId = document.getElementById("articleFolderId");
 
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");
     if (!btn) return;
 
-    const parent = btn.getAttribute("data-parent") || "";
+    const parentId = btn.getAttribute("data-parent-id") || "";
     const action = btn.getAttribute("data-action");
 
     if (action === "new-folder") {
-      folderParent.value = parent;
+      folderParentId.value = parentId;
       folderModal.showModal();
       folderModal.querySelector('input[name="name"]').focus();
     }
 
     if (action === "new-article") {
-      articleParent.value = parent;
+      articleFolderId.value = parentId;
       articleModal.showModal();
       articleModal.querySelector('input[name="title"]').focus();
     }

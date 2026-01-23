@@ -17,7 +17,7 @@
 <section aria-label="Project list" class="cards">
   {% if projects and projects|length > 0 %}
     {% for p in projects %}
-      <a class="card card-link" href="{{ url_for('project_home', slug=p.slug) }}">
+      <a class="card card-link" href="{{ url_for('projects.project_home', slug=p.slug) }}">
         <header class="card-header">
           <h3 class="card-title">{{ p.name }}</h3>
         </header>
@@ -31,7 +31,7 @@
 </section>
 
 <dialog id="projectModal" aria-labelledby="projectModalTitle">
-  <form method="post" action="{{ url_for('create_project') }}" class="modal">
+  <form method="post" action="{{ url_for('projects.create_project') }}" class="modal">
     <header class="modal-header">
       <h3 id="projectModalTitle">New project</h3>
     </header>

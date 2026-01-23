@@ -3,34 +3,37 @@
 {% block title %}MythDB{% endblock %}
 
 {% block content %}
-<header class="landing-header">
-  <h2>MythDB</h2>
-  <p class="muted">A self-hosted canon database for living worlds.</p>
-</header>
+<div class="landing-container">
+  <header class="landing-header">
+    <div class="landing-header-content">
+      <h1>MythDB</h1>
+      <p class="landing-tagline">A self-hosted canon database for living worlds.</p>
+      <p class="landing-description">Organize your world's lore with structured articles, relationships, and media. Built for worldbuilders, by worldbuilders.</p>
+    </div>
+  </header>
 
-<section class="landing-actions" aria-label="Primary actions">
-  <a class="btn" href="{{ url_for('projects_overview') }}">Open Projects</a>
-  <a class="btn btn-secondary" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
-</section>
+  <section class="landing-grid" aria-label="Features">
+    <article class="landing-card">
+      <div class="landing-card-icon">📦</div>
+      <h3 class="landing-card-title">Local-first</h3>
+      <p class="landing-card-meta">Your data lives on your server. Exportable, inspectable, and yours.</p>
+    </article>
 
-<section class="landing-grid" aria-label="Highlights">
-  <article class="card">
-    <h3 class="card-title">Local-first</h3>
-    <p class="card-meta">Your data lives on your server. Exportable, inspectable, and yours.</p>
-  </article>
+    <article class="landing-card">
+      <div class="landing-card-icon">🔗</div>
+      <h3 class="landing-card-title">Structured Lore</h3>
+      <p class="landing-card-meta">Articles are more than text. Typed fields, references, and relations.</p>
+    </article>
 
-  <article class="card">
-    <h3 class="card-title">Structured lore</h3>
-    <p class="card-meta">Articles are more than text. Typed fields, references, and relations.</p>
-  </article>
+    <article class="landing-card">
+      <div class="landing-card-icon">⚙️</div>
+      <h3 class="landing-card-title">No Framework Churn</h3>
+      <p class="landing-card-meta">Python backend, HTML/CSS/JS frontend. Simple by design.</p>
+    </article>
+  </section>
 
-  <article class="card">
-    <h3 class="card-title">No framework churn</h3>
-    <p class="card-meta">Python backend, HTML/CSS/JS frontend. Simple by design.</p>
-  </article>
-</section>
-
-<section class="landing-footer-note" aria-label="Status">
-  <p class="muted"><small>Running in development mode. Head to Projects to create your first world.</small></p>
-</section>
+  <section class="landing-cta" aria-label="Call to action">
+    <p class="landing-cta-text">Ready to build your world? Head to <strong>Projects</strong> to get started.</p>
+  </section>
+</div>
 {% endblock %}

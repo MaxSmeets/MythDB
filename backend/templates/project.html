@@ -178,24 +178,87 @@
         <span>{{ project.name }}</span>
       </p>
       <h2>{{ project.name }}</h2>
-      <p class="muted">Pick a folder on the left to create articles and structure your world.</p>
+      <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
     </header>
 
-    <section class="cards" aria-label="Project sections">
-      <a class="card card-link" href="#">
-        <h3 class="card-title">Articles</h3>
-        <p class="card-meta">Browse and search project articles (later).</p>
-      </a>
+    <!-- Quick Guide -->
+    <section class="quick-guide" id="quickGuide" aria-label="Getting started">
+      <div class="quick-guide-header">
+        <h3>Getting Started</h3>
+        <button type="button" id="hideQuickGuide" class="btn-icon" aria-label="Hide quick guide" title="Hide quick guide">✕</button>
+      </div>
+      <div class="guide-cards">
+        <div class="guide-card">
+          <div class="guide-icon">📁</div>
+          <h4>Organize with Folders</h4>
+          <p>Use the sidebar to create folders and organize your articles by location, character groups, or any structure that makes sense for your world.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">📝</div>
+          <h4>Create Articles</h4>
+          <p>Right-click on any folder to create a new article. Choose from 5 article types: NPCs, Locations, Settlements, Factions, and Items.</p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">✏️</div>
+          <h4>Write in Markdown</h4>
+          <p>All articles support full Markdown formatting. Add bold, italics, lists, headings, links, code blocks, and more to bring your world to life.</p>
+        </div>
+      </div>
+    </section>
 
-      <a class="card card-link" href="#">
-        <h3 class="card-title">Media</h3>
-        <p class="card-meta">Maps, images, symbols (later).</p>
-      </a>
+    <!-- Project Statistics -->
+    <section class="stats-section" aria-label="Project statistics">
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.folders_count }}</div>
+        <div class="stat-label">Folders</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.articles_count }}</div>
+        <div class="stat-label">Articles</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.total_words }}</div>
+        <div class="stat-label">Words</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number">{{ stats.media_count }}</div>
+        <div class="stat-label">Media Files</div>
+      </div>
+    </section>
 
-      <a class="card card-link" href="#">
-        <h3 class="card-title">Timeline</h3>
-        <p class="card-meta">Events and chronology (later).</p>
-      </a>
+    <!-- Recent Articles -->
+    {% if stats.recent_articles and stats.recent_articles|length > 0 %}
+    <section class="recent-articles" aria-label="Recently updated articles">
+      <h3>Recently Updated</h3>
+      <div class="article-list">
+        {% for article in stats.recent_articles %}
+        <div class="article-item">
+          <div class="article-header">
+            <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}" class="article-title">
+              {{ article.title }}
+            </a>
+            <span class="article-type">{{ article.type_name }}</span>
+          </div>
+          <p class="article-meta">Updated {{ article.updated_at }}</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    
+
+    <!-- Article Types Reference -->
+    <section class="types-reference" aria-label="Article types reference">
+      <h3>Article Types</h3>
+      <div class="types-grid">
+        {% for type in types %}
+        <div class="type-card">
+          <h4>{{ type.name }}</h4>
+          <p class="type-key">{{ type.key }}</p>
+        </div>
+        {% endfor %}
+      </div>
     </section>
   </section>
 </div>
@@ -267,6 +330,26 @@
   const articleModal = document.getElementById("articleModal");
   const folderParentId = document.getElementById("folderParentId");
   const articleFolderId = document.getElementById("articleFolderId");
+  const quickGuideSection = document.getElementById("quickGuide");
+  const hideQuickGuideBtn = document.getElementById("hideQuickGuide");
+
+  // Quick Guide visibility
+  function initQuickGuideVisibility() {
+    const isHidden = localStorage.getItem("quickGuideHidden") === "true";
+    if (isHidden) {
+      quickGuideSection.classList.add("hidden");
+    }
+  }
+
+  if (hideQuickGuideBtn) {
+    hideQuickGuideBtn.addEventListener("click", () => {
+      quickGuideSection.classList.add("hidden");
+      localStorage.setItem("quickGuideHidden", "true");
+    });
+  }
+
+  // Initialize on page load
+  initQuickGuideVisibility();
 
   document.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-action]");

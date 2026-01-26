@@ -49,9 +49,26 @@
 
     <!-- Edit mode -->
     <form id="editMode" method="post" action="{{ url_for('articles.edit_article', slug=project.slug, article_id=article.id) }}" class="article-editor hidden">
+      <div class="editor-toolbar">
+        <button type="button" id="linkArticleBtn" class="btn btn-secondary" title="Link to another article">🔗 Link Article</button>
+        
+        <!-- Article Link Dropdown -->
+        <div id="linkDropdown" class="article-link-dropdown hidden">
+          <input 
+            type="text" 
+            id="articleSearchInput" 
+            class="article-search" 
+            placeholder="Search articles..."
+            spellcheck="false"
+          >
+          <div id="articleList" class="article-dropdown-list"></div>
+        </div>
+      </div>
+      
       <textarea 
         name="body_content" 
         class="editor-textarea" 
+        id="editorTextarea"
         required 
         placeholder="Write your markdown here..."
         spellcheck="false"
@@ -101,5 +118,103 @@
     // Switch back to read mode
     modeToggle.click();
   });
+
+  // Article linking functionality
+  const linkArticleBtn = document.getElementById('linkArticleBtn');
+  const linkDropdown = document.getElementById('linkDropdown');
+  const articleSearchInput = document.getElementById('articleSearchInput');
+  const articleList = document.getElementById('articleList');
+  const editorTextarea = document.getElementById('editorTextarea');
+  
+  let allArticles = [];
+
+  // Fetch articles from API
+  async function loadArticles() {
+    const projectSlug = '{{ project.slug }}';
+    const articleId = {{ article.id }};
+    
+    try {
+      const response = await fetch(`/projects/${projectSlug}/api/articles?exclude_id=${articleId}`);
+      if (response.ok) {
+        allArticles = await response.json();
+        renderArticleList(allArticles);
+      }
+    } catch (error) {
+      console.error('Failed to load articles:', error);
+    }
+  }
+
+  // Render article list
+  function renderArticleList(articles) {
+    if (articles.length === 0) {
+      articleList.innerHTML = '<div class="article-dropdown-empty">No articles found</div>';
+      return;
+    }
+    
+    articleList.innerHTML = articles.map(article => `
+      <div class="article-dropdown-item" data-slug="${article.slug}" data-title="${article.title}">
+        <div class="article-dropdown-title">${article.title}</div>
+        <div class="article-dropdown-type">${article.type_name}</div>
+      </div>
+    `).join('');
+    
+    // Add click handlers to items
+    document.querySelectorAll('.article-dropdown-item').forEach(item => {
+      item.addEventListener('click', () => {
+        insertArticleLink(item.dataset.slug, item.dataset.title);
+        linkDropdown.classList.add('hidden');
+      });
+    });
+  }
+
+  // Filter articles based on search
+  function filterArticles(searchTerm) {
+    const filtered = allArticles.filter(article => 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    renderArticleList(filtered);
+  }
+
+  // Insert article link at cursor position
+  function insertArticleLink(slug, title) {
+    const textarea = editorTextarea;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const beforeCursor = textarea.value.substring(0, start);
+    const afterCursor = textarea.value.substring(end);
+    const markdownLink = `[${title}](article:${slug})`;
+    
+    textarea.value = beforeCursor + markdownLink + afterCursor;
+    
+    // Set cursor position after the inserted link
+    const newPosition = start + markdownLink.length;
+    textarea.selectionStart = newPosition;
+    textarea.selectionEnd = newPosition;
+    textarea.focus();
+  }
+
+  // Toggle dropdown on button click
+  linkArticleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    linkDropdown.classList.toggle('hidden');
+    if (!linkDropdown.classList.contains('hidden')) {
+      articleSearchInput.focus();
+    }
+  });
+
+  // Filter articles as user types
+  articleSearchInput.addEventListener('input', (e) => {
+    filterArticles(e.target.value);
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('#linkArticleBtn') && !e.target.closest('#linkDropdown')) {
+      linkDropdown.classList.add('hidden');
+    }
+  });
+
+  // Load articles on page load
+  loadArticles();
 </script>
 {% endblock %}

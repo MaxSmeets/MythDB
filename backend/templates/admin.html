@@ -94,6 +94,25 @@
   </dl>
 </section>
 
+<section aria-labelledby="ui-prefs-title">
+  <header>
+    <h3 id="ui-prefs-title">UI Preferences</h3>
+  </header>
+
+  <div role="group" aria-label="UI preference controls">
+    <label style="display: flex; gap: var(--spacing-md); align-items: center; cursor: pointer;">
+      <input type="checkbox" id="quickGuideToggle" />
+      <span>Show Quick Guide on project pages</span>
+    </label>
+  </div>
+
+  <p>
+    <small>
+      Users can hide the Quick Guide on their project pages using the hide button. Toggle this to reset the preference for all users.
+    </small>
+  </p>
+</section>
+
 <section aria-labelledby="logs-title">
   <header>
     <h3 id="logs-title">Logs</h3>
@@ -110,4 +129,24 @@
 [2026-01-08 10:06:10] INFO  Health check OK</code></pre>
   </details>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const quickGuideToggle = document.getElementById('quickGuideToggle');
+  
+  function initQuickGuideToggle() {
+    const isHidden = localStorage.getItem('quickGuideHidden') === 'true';
+    quickGuideToggle.checked = !isHidden;
+  }
+  
+  if (quickGuideToggle) {
+    quickGuideToggle.addEventListener('change', () => {
+      const shouldHide = !quickGuideToggle.checked;
+      localStorage.setItem('quickGuideHidden', shouldHide ? 'true' : 'false');
+    });
+    
+    initQuickGuideToggle();
+  }
+</script>
 {% endblock %}

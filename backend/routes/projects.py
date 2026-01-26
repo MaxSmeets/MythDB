@@ -1,12 +1,12 @@
 """Project management routes."""
 
-from flask import Blueprint, render_template, request, redirect, url_for, abort
-from services.project_store import load_projects, add_project, get_project_by_slug
+from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify
+from services.project_store import load_projects, add_project, get_project_by_slug, _get_project_statistics
 from services.folder_store import get_folders_tree
 from services.article_store import list_article_types
+from db import db_conn
 
 bp = Blueprint("projects", __name__, url_prefix="/projects")
-
 
 @bp.route("/")
 def projects_overview():
@@ -42,6 +42,7 @@ def project_home(slug: str):
 
     tree = get_folders_tree(int(project["id"]))
     types = list_article_types()
+    stats = _get_project_statistics(int(project["id"]))
     error = request.args.get("error")
 
     return render_template(
@@ -50,5 +51,41 @@ def project_home(slug: str):
         project=project,
         tree=tree,
         types=types,
+        stats=stats,
         error=error,
     )
+
+@bp.route("/<slug>/api/articles", methods=["GET"])
+def get_project_articles_api(slug: str):
+    """API endpoint to get all articles in a project for linking.
+    
+    Optional query parameter:
+      - exclude_id: Article ID to exclude (for excluding current article)
+    
+    Returns JSON list of articles with id, slug, title, type_name.
+    """
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+    
+    exclude_id = request.args.get("exclude_id", type=int)
+    
+    with db_conn() as conn:
+        query = """
+            SELECT a.id, a.slug, a.title, t.name AS type_name
+            FROM articles a
+            JOIN article_types t ON a.type_id = t.id
+            WHERE a.project_id = ?
+        """
+        params = [int(project["id"])]
+        
+        if exclude_id:
+            query += " AND a.id != ?"
+            params.append(exclude_id)
+        
+        query += " ORDER BY a.title ASC;"
+        
+        rows = conn.execute(query, params).fetchall()
+        articles = [dict(r) for r in rows]
+    
+    return jsonify(articles)

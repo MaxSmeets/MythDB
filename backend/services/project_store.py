@@ -3,6 +3,7 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from typing import Any
+from pathlib import Path
 
 from db import db_conn
 
@@ -91,3 +92,71 @@ def get_project_by_slug(slug: str) -> dict[str, Any] | None:
             (slug,),
         ).fetchone()
     return dict(row) if row else None
+
+def _get_project_statistics(project_id: int):
+    """Get statistics for a project."""
+    with db_conn() as conn:
+        # Count total articles
+        articles_count = conn.execute(
+            "SELECT COUNT(*) as count FROM articles WHERE project_id = ?;",
+            (project_id,),
+        ).fetchone()["count"]
+        
+        # Count total folders
+        folders_count = conn.execute(
+            "SELECT COUNT(*) as count FROM folders WHERE project_id = ?;",
+            (project_id,),
+        ).fetchone()["count"]
+        
+        # Count total words in all articles
+        articles_content = conn.execute(
+            "SELECT body_content FROM articles WHERE project_id = ?;",
+            (project_id,),
+        ).fetchall()
+        
+        total_words = 0
+        for row in articles_content:
+            content = row["body_content"] or ""
+            # Count words by splitting on whitespace
+            words = len(content.split())
+            total_words += words
+        
+        # Get project slug to count media files
+        project_row = conn.execute(
+            "SELECT slug FROM projects WHERE id = ? LIMIT 1;",
+            (project_id,),
+        ).fetchone()
+        
+        media_count = 0
+        if project_row:
+            project_slug = project_row["slug"]
+            media_dir = Path("data/projects") / project_slug / "media"
+            if media_dir.exists():
+                # Count image files
+                allowed_exts = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+                media_count = sum(
+                    1 for f in media_dir.iterdir() 
+                    if f.is_file() and f.suffix.lower() in allowed_exts
+                )
+        
+        # Get recent articles
+        recent_articles = conn.execute(
+            """
+            SELECT a.id, a.slug, a.title, a.updated_at, 
+                   t.name AS type_name, t.key AS type_key
+            FROM articles a
+            JOIN article_types t ON a.type_id = t.id
+            WHERE a.project_id = ?
+            ORDER BY a.updated_at DESC
+            LIMIT 5;
+            """,
+            (project_id,),
+        ).fetchall()
+    
+    return {
+        "articles_count": articles_count,
+        "folders_count": folders_count,
+        "total_words": total_words,
+        "media_count": media_count,
+        "recent_articles": [dict(r) for r in recent_articles],
+    }

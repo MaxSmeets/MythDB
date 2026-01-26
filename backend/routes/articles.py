@@ -12,6 +12,7 @@ from services.article_store import (
     list_article_types,
 )
 from services.media_store import rewrite_media_urls
+from services.markdown_service import process_article_links
 
 bp = Blueprint("articles", __name__, url_prefix="/projects")
 
@@ -65,6 +66,8 @@ def article_view(slug: str, article_id: int):
 
     # Render markdown content
     raw_md = article["body_content"]
+    # Process article links before markdown rendering
+    raw_md = process_article_links(raw_md, project["slug"])
     rendered_html = md.markdown(
         raw_md,
         extensions=["tables", "fenced_code", "footnotes", "toc"],

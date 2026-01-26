@@ -3,30 +3,8 @@
 {% block title %}MythDB · {{ project.name }} · {{ article.title }}{% endblock %}
 
 {% block content %}
-<header class="page-header">
-  <p class="breadcrumb">
-    <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
-    <span aria-hidden="true">/</span>
-    <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
-    <span aria-hidden="true">/</span>
-    <span>{{ article.title }}</span>
-  </p>
-
-  <div class="article-header-row">
-    <div>
-      <h2>{{ article.title }}</h2>
-      <p class="muted">
-        <strong>Type:</strong> {{ article.type_name }}
-        <span aria-hidden="true">·</span>
-        <strong>Slug:</strong> <code>{{ article.slug }}</code>
-      </p>
-    </div>
-    <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
-  </div>
-</header>
-
-<section class="article-layout">
-  <aside class="article-side" aria-label="Article metadata">
+<div class="article-layout">
+  <aside class="sidebar" aria-label="Article metadata">
     <div class="card">
       <h3 class="card-title">Metadata</h3>
       <p class="card-meta"><strong>ID:</strong> {{ article.id }}</p>
@@ -41,7 +19,29 @@
     </div>
   </aside>
 
-  <div class="article-content">
+  <div class="article-main">
+    <header class="page-header">
+      <p class="breadcrumb">
+        <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
+        <span aria-hidden="true">/</span>
+        <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
+        <span aria-hidden="true">/</span>
+        <span>{{ article.title }}</span>
+      </p>
+
+      <div class="article-header-row">
+        <div>
+          <h2>{{ article.title }}</h2>
+          <p class="muted">
+            <strong>Type:</strong> {{ article.type_name }}
+            <span aria-hidden="true">·</span>
+            <strong>Slug:</strong> <code>{{ article.slug }}</code>
+          </p>
+        </div>
+        <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
+      </div>
+    </header>
+
     <!-- Read mode -->
     <article id="readMode" class="article-body markdown" aria-label="Article body">
       {{ rendered_html | safe }}
@@ -63,7 +63,7 @@
       </div>
     </form>
   </div>
-</section>
+</div>
 {% endblock %}
 
 {% block scripts %}

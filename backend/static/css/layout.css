@@ -178,6 +178,41 @@ pre {
    Structured Fields
    ========================= */
 
+.view-mode-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.field-display {
+  display: flex;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.field-display .field-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.field-value {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.field-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: text-decoration 0.2s;
+}
+
+.field-link:hover {
+  text-decoration: underline;
+}
+
 .structured-fields {
   display: flex;
   flex-direction: column;
@@ -1297,6 +1332,18 @@ dialog::backdrop {
 
 .article-header-row h2 {
   margin: 0 0 var(--spacing-md) 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+  height: fit-content;
+  margin: var(--spacing-md) 0 0 var(--spacing-lg);
+}
+
+.header-actions .btn {
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
 .article-header-row button {

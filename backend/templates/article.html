@@ -20,7 +20,11 @@
            {{ article.type_name }}
         </p>
       </div>
-      <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
+      <div class="header-actions">
+        <button id="saveBtn" class="btn btn-primary hidden">💾 Save</button>
+        <button id="cancelEditBtn" class="btn btn-secondary hidden">✕ Cancel</button>
+        <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
+      </div>
     </div>
   </header>
 
@@ -59,7 +63,30 @@
     <div class="card">
       <h3 class="card-title">Structured fields</h3>
       {% if prompts %}
-      <div class="structured-fields">
+      
+      <!-- View mode: Display as key-value pairs -->
+      <div id="viewModeFields" class="view-mode-fields">
+        {% for prompt in prompts %}
+        {% set prompt_value = prompt_values.get(prompt.key, {}) %}
+        {% if prompt.type == "text" and prompt_value.get('value') %}
+        <div class="field-display">
+          <span class="field-label">{{ prompt.text }}:</span>
+          <span class="field-value">{{ prompt_value.get('value') }}</span>
+        </div>
+        {% elif prompt.type == "select" and prompt_value.get('linked_article_id') %}
+        <div class="field-display">
+          <span class="field-label">{{ prompt.text }}:</span>
+          {% set linked_article = linked_articles_by_key.get(prompt.key, []) | selectattr('id', 'equalto', prompt_value.get('linked_article_id')) | first %}
+          {% if linked_article %}
+            <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=linked_article.id) }}" class="field-link">{{ linked_article.title }}</a>
+          {% endif %}
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
+      
+      <!-- Edit mode: Display as form fields -->
+      <div id="editModeFields" class="structured-fields hidden">
         {% for prompt in prompts %}
         <div class="field-group" data-prompt-id="{{ prompt.id }}" data-prompt-key="{{ prompt.key }}" data-prompt-type="{{ prompt.type }}">
           <label class="field-label">{{ prompt.text }}</label>
@@ -70,10 +97,11 @@
             class="field-input" 
             placeholder="Enter value..."
             value="{{ prompt_values.get(prompt.key, {}).get('value', '') or '' }}"
+            disabled
           >
           
           {% elif prompt.type == "select" %}
-          <select class="field-input field-select">
+          <select class="field-input field-select" disabled>
             <option value="">— Select —</option>
             {% for article in linked_articles_by_key.get(prompt.key, []) %}
             <option 
@@ -88,6 +116,7 @@
         </div>
         {% endfor %}
       </div>
+      
       {% else %}
       <p class="card-meta muted">No structured fields defined for this article type.</p>
       {% endif %}
@@ -115,7 +144,7 @@
     </article>
 
     <!-- Edit mode -->
-    <form id="editMode" method="post" action="{{ url_for('articles.edit_article', slug=project.slug, article_id=article.id) }}" class="article-editor hidden">
+    <div id="editMode" class="article-editor hidden">
       <div class="editor-toolbar">
         <button type="button" id="linkArticleBtn" class="btn btn-secondary" title="Link to another article">🔗 Link Article</button>
         
@@ -140,12 +169,7 @@
         placeholder="Write your markdown here..."
         spellcheck="false"
       >{{ article.body_content }}</textarea>
-
-      <div class="editor-actions">
-        <button type="submit" class="btn">💾 Save</button>
-        <button type="button" id="cancelEdit" class="btn btn-secondary">Cancel</button>
-      </div>
-    </form>
+    </div>
   </div>
 </div>
 {% endblock %}

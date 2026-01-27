@@ -120,7 +120,7 @@ def init_schema() -> None:
                 updated_at TEXT NOT NULL,
                 FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE,
                 FOREIGN KEY(prompt_id) REFERENCES prompts(id) ON DELETE CASCADE,
-                FOREIGN KEY(linked_article_id) REFERENCES articles(id),
+                FOREIGN KEY(linked_article_id) REFERENCES articles(id) ON DELETE SET NULL,
                 UNIQUE(article_id, prompt_id)
             );
             """

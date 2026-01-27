@@ -2,37 +2,130 @@
 
 // Mode toggle (Read/Edit)
 const modeToggle = document.getElementById('modeToggle');
+const saveBtn = document.getElementById('saveBtn');
+const cancelEditBtn = document.getElementById('cancelEditBtn');
 const readMode = document.getElementById('readMode');
 const editMode = document.getElementById('editMode');
-const cancelEdit = document.getElementById('cancelEdit');
+const fieldInputs = document.querySelectorAll('.field-input');
 
 let currentMode = 'read';
+let pendingChanges = {}; // Store changes to save on button click
+let originalFieldValues = {}; // Store original field values for cancel
+
+// Enable/disable structured fields based on mode
+function updateFieldsState() {
+  fieldInputs.forEach(input => {
+    input.disabled = currentMode === 'read';
+  });
+}
 
 modeToggle.addEventListener('click', () => {
   if (currentMode === 'read') {
     // Switch to edit
     readMode.classList.add('hidden');
     editMode.classList.remove('hidden');
+    document.getElementById('viewModeFields')?.classList.add('hidden');
+    document.getElementById('editModeFields')?.classList.remove('hidden');
     modeToggle.textContent = '👁️ View';
     modeToggle.dataset.mode = 'edit';
+    saveBtn.classList.remove('hidden');
+    cancelEditBtn.classList.remove('hidden');
     currentMode = 'edit';
+    updateFieldsState();
+    
+    // Store original field values for cancel
+    originalFieldValues = {};
+    fieldInputs.forEach(input => {
+      originalFieldValues[input.id] = input.value;
+    });
+    
     editMode.querySelector('textarea').focus();
   } else {
-    // Switch to read
+    // Switch to read (without saving)
     readMode.classList.remove('hidden');
     editMode.classList.add('hidden');
+    document.getElementById('viewModeFields')?.classList.remove('hidden');
+    document.getElementById('editModeFields')?.classList.add('hidden');
     modeToggle.textContent = '✏️ Edit';
     modeToggle.dataset.mode = 'read';
+    saveBtn.classList.add('hidden');
+    cancelEditBtn.classList.add('hidden');
     currentMode = 'read';
+    updateFieldsState();
   }
 });
 
-cancelEdit.addEventListener('click', () => {
-  // Reset textarea to original content
+cancelEditBtn.addEventListener('click', () => {
   const textarea = editMode.querySelector('textarea');
-  textarea.value = textarea.defaultValue;
-  // Switch back to read mode
-  modeToggle.click();
+  const markdownChanged = textarea.value !== textarea.defaultValue;
+  const hasFieldChanges = Object.keys(pendingChanges).length > 0;
+  
+  if (markdownChanged || hasFieldChanges) {
+    const confirmed = confirm('You have unsaved changes. Are you sure you want to discard them?');
+    if (!confirmed) return;
+  }
+  
+  // Clear pending changes
+  pendingChanges = {};
+  originalFieldValues = {};
+  
+  // Reload the page to restore original state
+  window.location.reload();
+});
+
+// Save button handler - save all pending changes and switch to view mode
+saveBtn.addEventListener('click', async () => {
+  const projectSlug = document.querySelector('[data-project-slug]')?.dataset.projectSlug;
+  const articleId = parseInt(document.querySelector('[data-article-id]')?.dataset.articleId || 0, 10);
+  const textarea = document.getElementById('editorTextarea');
+  const bodyContent = textarea.value;
+  
+  try {
+    // Save markdown content
+    const markdownResponse = await fetch(
+      `/projects/${projectSlug}/a/${articleId}/edit`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          body_content: bodyContent,
+        }).toString(),
+      }
+    );
+    
+    if (!markdownResponse.ok) {
+      throw new Error('Failed to save markdown');
+    }
+    
+    // Save all pending field changes
+    const savePromises = Object.entries(pendingChanges).map(([promptId, change]) => 
+      fetch(
+        `/projects/${projectSlug}/a/${articleId}/api/set-prompt`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt_id: parseInt(promptId, 10),
+            value: change.value,
+            linked_article_id: change.linkedArticleId,
+          }),
+        }
+      )
+    );
+    
+    await Promise.all(savePromises);
+    pendingChanges = {}; // Clear pending changes
+    
+    // Reload the page to show updated content
+    window.location.reload();
+  } catch (error) {
+    console.error('Error saving changes:', error);
+    alert('Failed to save changes');
+  }
 });
 
 // Article linking functionality
@@ -132,6 +225,9 @@ document.addEventListener('click', (e) => {
 
 // Load articles on page load
 loadArticles();
+
+// Load media files on page load
+loadMediaFiles();
 
 // Image selection functionality
 const imageDropdown = document.getElementById('imageDropdown');
@@ -292,13 +388,9 @@ if (collapseBtn) {
   });
 }
 
-// Structured fields functionality
-const fieldInputs = document.querySelectorAll('.field-input');
-const projectSlug = document.querySelector('[data-project-slug]')?.dataset.projectSlug;
-const articleId = parseInt(document.querySelector('[data-article-id]')?.dataset.articleId || 0, 10);
-
+// Structured fields functionality - track changes for deferred save
 fieldInputs.forEach(input => {
-  input.addEventListener('change', async () => {
+  input.addEventListener('change', () => {
     const fieldGroup = input.closest('.field-group');
     const promptId = fieldGroup.dataset.promptId;
     const promptType = fieldGroup.dataset.promptType;
@@ -312,29 +404,14 @@ fieldInputs.forEach(input => {
       linkedArticleId = input.value ? parseInt(input.value, 10) : null;
     }
     
-    try {
-      const response = await fetch(
-        `/projects/${projectSlug}/a/${articleId}/api/set-prompt`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            prompt_id: parseInt(promptId, 10),
-            value: value,
-            linked_article_id: linkedArticleId,
-          }),
-        }
-      );
-      
-      if (!response.ok) {
-        const error = await response.json();
-        console.error('Failed to save prompt value:', error);
-      }
-    } catch (error) {
-      console.error('Error saving prompt value:', error);
-    }
+    // Track the change for later saving
+    pendingChanges[promptId] = {
+      value: value,
+      linkedArticleId: linkedArticleId,
+    };
   });
 });
+
+// Initialize field states on page load
+updateFieldsState();
 

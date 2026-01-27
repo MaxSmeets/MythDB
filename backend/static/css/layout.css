@@ -1221,6 +1221,8 @@ dialog::backdrop {
 
 .article-main {
   min-width: 0;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: var(--spacing-lg);
 }
 
 .article-header-row {

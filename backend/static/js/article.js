@@ -30,6 +30,8 @@ modeToggle.addEventListener('click', () => {
     modeToggle.dataset.mode = 'edit';
     saveBtn.classList.remove('hidden');
     cancelEditBtn.classList.remove('hidden');
+    selectImageBtn?.classList.remove('hidden');
+    changeImageBtn?.classList.remove('hidden');
     currentMode = 'edit';
     updateFieldsState();
     
@@ -50,6 +52,8 @@ modeToggle.addEventListener('click', () => {
     modeToggle.dataset.mode = 'read';
     saveBtn.classList.add('hidden');
     cancelEditBtn.classList.add('hidden');
+    selectImageBtn?.classList.add('hidden');
+    changeImageBtn?.classList.add('hidden');
     currentMode = 'read';
     updateFieldsState();
   }

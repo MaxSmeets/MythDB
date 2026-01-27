@@ -36,14 +36,14 @@
         alt="Featured image for {{ article.title }}"
         class="article-image"
       >
-      <button type="button" id="changeImageBtn" class="btn-change-image">Change Image</button>
+      <button type="button" id="changeImageBtn" class="btn-change-image hidden">Change Image</button>
     </div>
     {% else %}
     <div id="imagePickerPlaceholder" class="article-image-placeholder">
       <div class="placeholder-content">
         <div class="placeholder-icon">🖼️</div>
         <p class="placeholder-text">No featured image</p>
-        <button type="button" id="selectImageBtn" class="btn btn-secondary">Select Image</button>
+        <button type="button" id="selectImageBtn" class="btn btn-secondary hidden">Select Image</button>
       </div>
     </div>
     {% endif %}

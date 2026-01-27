@@ -55,6 +55,16 @@
 
 {% block content %}
 <div class="project-layout" data-project-slug="{{ project.slug }}">
+  <header class="page-header">
+    <p class="breadcrumb">
+      <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ project.name }}</span>
+    </p>
+    <h2>{{ project.name }}</h2>
+    <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
+  </header>
+
   <aside class="sidebar" aria-label="Project folders">
 
     <a class="card card-link" href="{{ url_for('media.project_media', slug=project.slug) }}">
@@ -167,15 +177,6 @@
   </aside>
 
   <section class="project-main" aria-label="Project home">
-    <header class="page-header">
-      <p class="breadcrumb">
-        <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
-        <span aria-hidden="true">/</span>
-        <span>{{ project.name }}</span>
-      </p>
-      <h2>{{ project.name }}</h2>
-      <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
-    </header>
 
     <!-- Quick Guide -->
     <section class="quick-guide" id="quickGuide" aria-label="Getting started">

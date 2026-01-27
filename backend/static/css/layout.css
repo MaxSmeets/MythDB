@@ -101,6 +101,8 @@ pre {
 
 .page-header {
   margin-bottom: var(--spacing-lg);
+  position: relative;
+  z-index: 2;
 }
 
 .toolbar {
@@ -1276,6 +1278,10 @@ dialog::backdrop {
   align-items: start;
 }
 
+.page-header {
+  grid-column: 1 / -1;
+}
+
 .article-main {
   min-width: 0;
   border-top: 1px solid var(--border-subtle);
@@ -1508,9 +1514,5 @@ dialog::backdrop {
     flex-direction: column;
     gap: var(--spacing-md);
     align-items: flex-start;
-  }
-
-  .sidebar {
-    grid-column: 1;
   }
 }

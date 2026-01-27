@@ -4,6 +4,26 @@
 
 {% block content %}
 <div class="article-layout" data-project-slug="{{ project.slug }}" data-article-id="{{ article.id }}">
+  <header class="page-header">
+    <p class="breadcrumb">
+      <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
+      <span aria-hidden="true">/</span>
+      <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
+      <span aria-hidden="true">/</span>
+      <span>{{ article.title }}</span>
+    </p>
+
+    <div class="article-header-row">
+      <div>
+        <h2>{{ article.title }}</h2>
+        <p class="muted">
+           {{ article.type_name }}
+        </p>
+      </div>
+      <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
+    </div>
+  </header>
+
   <aside class="sidebar" aria-label="Article metadata">
     {% if article.featured_image %}
     <div class="article-image-container">
@@ -88,25 +108,6 @@
   </aside>
 
   <div class="article-main">
-    <header class="page-header">
-      <p class="breadcrumb">
-        <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
-        <span aria-hidden="true">/</span>
-        <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
-        <span aria-hidden="true">/</span>
-        <span>{{ article.title }}</span>
-      </p>
-
-      <div class="article-header-row">
-        <div>
-          <h2>{{ article.title }}</h2>
-          <p class="muted">
-             {{ article.type_name }}
-          </p>
-        </div>
-        <button id="modeToggle" class="btn" data-mode="read">✏️ Edit</button>
-      </div>
-    </header>
 
     <!-- Read mode -->
     <article id="readMode" class="article-body markdown" aria-label="Article body">

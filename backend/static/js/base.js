@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Close dropdowns on outside click
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.tree-menu-btn') && !e.target.closest('.tree-dropdown')) {
+    if (!e.target.closest('.tree-folder-menu')) {
       document.querySelectorAll('.tree-dropdown.active').forEach(function(d) {
         d.classList.remove('active');
       });

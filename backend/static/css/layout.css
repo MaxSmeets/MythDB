@@ -173,6 +173,58 @@ pre {
 }
 
 /* =========================
+   Structured Fields
+   ========================= */
+
+.structured-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.field-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.field-input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.field-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(154, 164, 255, 0.1);
+}
+
+.field-input::placeholder {
+  color: var(--text-muted);
+}
+
+.field-select {
+  cursor: pointer;
+}
+
+.field-select option {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+/* =========================
    Modal
    ========================= */
 
@@ -743,21 +795,21 @@ dialog::backdrop {
   margin: 0;
 }
 
-.tree-folder {
-  margin: var(--spacing-sm) 0;
-}
-
 .tree-row {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xs) 0;
+  /* gap: var(--spacing-sm); */
+  /* padding: var(--spacing-xs) 0; */
 }
 
 .tree-name {
   font-weight: 600;
   color: var(--text-primary);
   flex: 0 1 auto;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tree-actions {
@@ -782,19 +834,19 @@ dialog::backdrop {
 }
 
 .tree-children {
-  padding-left: var(--spacing-lg);
+  padding-left: 0.6rem;
   margin-top: 0.35rem;
   border-left: 1px solid var(--border-subtle);
 }
 
 .tree-articles {
-  padding-left: var(--spacing-lg);
-  margin-top: 0.35rem;
+  padding-left: 0.6rem;
+  /* margin-top: 0.35rem; */
   opacity: 0.85;
 }
 
 .tree-article {
-  margin: var(--spacing-xs) 0;
+  /* margin: var(--spacing-xs) 0; */
   color: var(--text-secondary);
 }
 
@@ -808,6 +860,10 @@ dialog::backdrop {
 .tree-article-name {
   flex: 1;
   min-width: 0;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tree-article-name a {
@@ -871,6 +927,7 @@ dialog::backdrop {
   border-radius: var(--radius-lg);
   opacity: 0;
   transition: opacity 0.2s, background 0.2s, color 0.2s;
+  z-index: 1;
 }
 
 .tree-article:hover .tree-article-menu .tree-menu-btn,
@@ -887,7 +944,7 @@ dialog::backdrop {
 .tree-dropdown {
   position: absolute;
   top: 100%;
-  right: 0;
+  left: 0;
   background: var(--bg-surface);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
@@ -976,7 +1033,7 @@ dialog::backdrop {
 
 .tree-collapsible {
   max-height: 1000vh;
-  overflow: hidden;
+  overflow: visible;
   transition: max-height 0.3s ease;
   margin-left: var(--spacing-md);
 }

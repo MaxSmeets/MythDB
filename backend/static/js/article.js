@@ -292,5 +292,49 @@ if (collapseBtn) {
   });
 }
 
-// Load media on page load
-loadMediaFiles();
+// Structured fields functionality
+const fieldInputs = document.querySelectorAll('.field-input');
+const projectSlug = document.querySelector('[data-project-slug]')?.dataset.projectSlug;
+const articleId = parseInt(document.querySelector('[data-article-id]')?.dataset.articleId || 0, 10);
+
+fieldInputs.forEach(input => {
+  input.addEventListener('change', async () => {
+    const fieldGroup = input.closest('.field-group');
+    const promptId = fieldGroup.dataset.promptId;
+    const promptType = fieldGroup.dataset.promptType;
+    
+    let value = null;
+    let linkedArticleId = null;
+    
+    if (promptType === 'text') {
+      value = input.value || null;
+    } else if (promptType === 'select') {
+      linkedArticleId = input.value ? parseInt(input.value, 10) : null;
+    }
+    
+    try {
+      const response = await fetch(
+        `/projects/${projectSlug}/a/${articleId}/api/set-prompt`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            prompt_id: parseInt(promptId, 10),
+            value: value,
+            linked_article_id: linkedArticleId,
+          }),
+        }
+      );
+      
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('Failed to save prompt value:', error);
+      }
+    } catch (error) {
+      console.error('Error saving prompt value:', error);
+    }
+  });
+});
+

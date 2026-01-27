@@ -1,6 +1,6 @@
 """Article management routes."""
 
-from flask import Blueprint, render_template, request, redirect, url_for, abort
+from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify
 import markdown as md
 from db import db_conn
 from services.project_store import get_project_by_slug
@@ -11,6 +11,13 @@ from services.article_store import (
     update_article_featured_image,
     delete_article,
     list_article_types,
+)
+from services.prompt_store import (
+    get_prompts_for_article_type,
+    get_prompt_values_for_article,
+    get_linked_articles,
+    save_prompt_value,
+    create_prompt_values_for_article,
 )
 from services.media_store import rewrite_media_urls
 from services.markdown_service import process_article_links
@@ -44,6 +51,15 @@ def create_article(slug: str):
             body_content=body_content,
         )
 
+        # Get article type id and create prompt values
+        with db_conn() as conn:
+            type_result = conn.execute(
+                "SELECT id FROM article_types WHERE key = ?",
+                (type_key,)
+            ).fetchone()
+            if type_result:
+                create_prompt_values_for_article(article["id"], type_result[0])
+
         return redirect(url_for("projects.project_home", slug=slug))
 
     except ValueError as e:
@@ -75,12 +91,28 @@ def article_view(slug: str, article_id: int):
     )
     rendered_html = rewrite_media_urls(rendered_html, project["slug"])
 
+    # Get prompts and their values
+    prompts = get_prompts_for_article_type(article["type_id"])
+    prompt_values = get_prompt_values_for_article(article_id)
+    
+    # For each select prompt, get linked articles
+    linked_articles_by_key = {}
+    for prompt in prompts:
+        if prompt["type"] == "select" and prompt["linked_style_key"]:
+            linked_articles_by_key[prompt["key"]] = get_linked_articles(
+                prompt["linked_style_key"],
+                int(project["id"])
+            )
+
     return render_template(
         "article.html",
         active_page="projects",
         project=project,
         article=article,
         rendered_html=rendered_html,
+        prompts=prompts,
+        prompt_values=prompt_values,
+        linked_articles_by_key=linked_articles_by_key,
     )
 
 
@@ -127,7 +159,6 @@ def delete_article_route(slug: str, article_id: int):
 @bp.route("/<slug>/a/<int:article_id>/api/set-image", methods=["POST"])
 def set_article_image(slug: str, article_id: int):
     """API endpoint to set featured image for an article."""
-    from flask import jsonify
     
     project = get_project_by_slug(slug)
     if not project:
@@ -142,6 +173,29 @@ def set_article_image(slug: str, article_id: int):
     try:
         update_article_featured_image(article_id, featured_image)
         return jsonify({"success": True, "featured_image": featured_image})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+@bp.route("/<slug>/a/<int:article_id>/api/set-prompt", methods=["POST"])
+def set_article_prompt(slug: str, article_id: int):
+    """API endpoint to set a prompt value for an article."""
+    
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    article = get_article_full(article_id)
+    if not article or article["project_id"] != int(project["id"]):
+        abort(404)
+
+    prompt_id = request.json.get("prompt_id")
+    value = request.json.get("value")
+    linked_article_id = request.json.get("linked_article_id")
+    
+    try:
+        save_prompt_value(article_id, prompt_id, value, linked_article_id)
+        return jsonify({"success": True})
     except Exception as e:
         return jsonify({"success": False, "error": str(e)}), 400
 

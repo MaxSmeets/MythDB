@@ -56,15 +56,11 @@
 {% block content %}
 <div class="project-layout" data-project-slug="{{ project.slug }}">
   <aside class="sidebar" aria-label="Project folders">
-    <header class="sidebar-header">
-      <h3>Project</h3>
-      <p class="muted">{{ project.name }}</p>
-      <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
-      <a class="card card-link" href="{{ url_for('media.project_media', slug=project.slug) }}">
+
+    <a class="card card-link" href="{{ url_for('media.project_media', slug=project.slug) }}">
       <h3 class="card-title">Media</h3>
       <p class="card-meta">Upload maps, images, symbols.</p>
     </a>
-    </header>
 
     {% if error %}
       <p class="alert" role="alert">{{ error }}</p>

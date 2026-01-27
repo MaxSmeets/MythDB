@@ -38,7 +38,39 @@
 
     <div class="card">
       <h3 class="card-title">Structured fields</h3>
-      <p class="card-meta muted">Coming next (field definitions + values).</p>
+      {% if prompts %}
+      <div class="structured-fields">
+        {% for prompt in prompts %}
+        <div class="field-group" data-prompt-id="{{ prompt.id }}" data-prompt-key="{{ prompt.key }}" data-prompt-type="{{ prompt.type }}">
+          <label class="field-label">{{ prompt.text }}</label>
+          
+          {% if prompt.type == "text" %}
+          <input 
+            type="text" 
+            class="field-input" 
+            placeholder="Enter value..."
+            value="{{ prompt_values.get(prompt.key, {}).get('value', '') or '' }}"
+          >
+          
+          {% elif prompt.type == "select" %}
+          <select class="field-input field-select">
+            <option value="">— Select —</option>
+            {% for article in linked_articles_by_key.get(prompt.key, []) %}
+            <option 
+              value="{{ article.id }}"
+              {% if prompt_values.get(prompt.key, {}).get('linked_article_id') == article.id %}selected{% endif %}
+            >
+              {{ article.title }}
+            </option>
+            {% endfor %}
+          </select>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p class="card-meta muted">No structured fields defined for this article type.</p>
+      {% endif %}
     </div>
 
     <div class="card card-collapsible" id="metadataCard">

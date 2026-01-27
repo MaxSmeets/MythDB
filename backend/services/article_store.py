@@ -114,7 +114,7 @@ def get_article_by_id(article_id: int) -> Optional[dict[str, Any]]:
         row = conn.execute(
             """
             SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.created_at, a.updated_at,
-                   t.key AS type_key, t.name AS type_name
+                   a.type_id, t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
             WHERE a.id = ?
@@ -132,7 +132,7 @@ def get_article_full(article_id: int) -> Optional[dict[str, Any]]:
             """
             SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content,
                    a.featured_image, a.created_at, a.updated_at,
-                   t.key AS type_key, t.name AS type_name
+                   a.type_id, t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
             WHERE a.id = ?

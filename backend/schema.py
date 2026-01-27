@@ -13,6 +13,23 @@ DEFAULT_ARTICLE_TYPES = [
     ("conflict", "Conflict"),
 ]
 
+DEFAULT_PROMPTS_PER_ARTICLE_TYPE = [
+    {
+        "article_type_key": "npc",
+        "prompt_key": "age",
+        "prompt_text": "Age",
+        "prompt_type": "text",
+        "prompt_linked_type_key": None,
+    },
+    {
+        "article_type_key": "npc",
+        "prompt_key": "hometown",
+        "prompt_text": "Home town",
+        "prompt_type": "select",
+        "prompt_linked_type_key": "location",
+    },
+]
+
 
 def init_schema() -> None:
     with db_conn() as conn:
@@ -99,3 +116,73 @@ def init_schema() -> None:
                 "INSERT OR IGNORE INTO article_types (key, name) VALUES (?, ?);",
                 (key, name),
             )
+
+        # Prompts (structured fields for articles)
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS prompts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                article_type_id INTEGER NOT NULL,
+                key TEXT NOT NULL,
+                text TEXT NOT NULL,
+                type TEXT NOT NULL,
+                linked_style_key TEXT,
+                created_at TEXT NOT NULL,
+                FOREIGN KEY(article_type_id) REFERENCES article_types(id) ON DELETE CASCADE,
+                UNIQUE(article_type_id, key)
+            );
+            """
+        )
+
+        # Prompt values (answers to prompts for specific articles)
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS prompt_values (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                article_id INTEGER NOT NULL,
+                prompt_id INTEGER NOT NULL,
+                value TEXT,
+                linked_article_id INTEGER,
+                created_at TEXT NOT NULL,
+                updated_at TEXT NOT NULL,
+                FOREIGN KEY(article_id) REFERENCES articles(id) ON DELETE CASCADE,
+                FOREIGN KEY(prompt_id) REFERENCES prompts(id) ON DELETE CASCADE,
+                FOREIGN KEY(linked_article_id) REFERENCES articles(id),
+                UNIQUE(article_id, prompt_id)
+            );
+            """
+        )
+
+        # Indexes for prompt values
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_prompt_values_article_id ON prompt_values(article_id);")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_prompt_values_prompt_id ON prompt_values(prompt_id);")
+
+        # Seed default prompts (idempotent)
+        from datetime import datetime
+        now = datetime.now().isoformat()
+        
+        for prompt_config in DEFAULT_PROMPTS_PER_ARTICLE_TYPE:
+            article_type_key = prompt_config["article_type_key"]
+            # Get the article type id
+            type_result = conn.execute(
+                "SELECT id FROM article_types WHERE key = ?",
+                (article_type_key,)
+            ).fetchone()
+            
+            if type_result:
+                type_id = type_result[0]
+                conn.execute(
+                    """
+                    INSERT OR IGNORE INTO prompts 
+                    (article_type_id, key, text, type, linked_style_key, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        type_id,
+                        prompt_config["prompt_key"],
+                        prompt_config["prompt_text"],
+                        prompt_config["prompt_type"],
+                        prompt_config.get("prompt_linked_type_key"),
+                        now,
+                    ),
+                )

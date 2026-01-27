@@ -28,6 +28,13 @@ DEFAULT_PROMPTS_PER_ARTICLE_TYPE = [
         "prompt_type": "select",
         "prompt_linked_type_key": "location",
     },
+    {
+        "article_type_key": "npc",
+        "prompt_key": "affiliation",
+        "prompt_text": "Affiliation",
+        "prompt_type": "select",
+        "prompt_linked_type_key": "faction",
+    }
 ]
 
 

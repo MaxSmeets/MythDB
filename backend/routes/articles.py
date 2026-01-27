@@ -8,6 +8,7 @@ from services.article_store import (
     create_article as db_create_article,
     get_article_full,
     update_article_content,
+    update_article_featured_image,
     delete_article,
     list_article_types,
 )
@@ -121,3 +122,26 @@ def delete_article_route(slug: str, article_id: int):
         return redirect(url_for("projects.project_home", slug=slug))
     except Exception as e:
         return redirect(url_for("projects.project_home", slug=slug, error=str(e)))
+
+
+@bp.route("/<slug>/a/<int:article_id>/api/set-image", methods=["POST"])
+def set_article_image(slug: str, article_id: int):
+    """API endpoint to set featured image for an article."""
+    from flask import jsonify
+    
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    article = get_article_full(article_id)
+    if not article or article["project_id"] != int(project["id"]):
+        abort(404)
+
+    featured_image = request.json.get("featured_image")
+    
+    try:
+        update_article_featured_image(article_id, featured_image)
+        return jsonify({"success": True, "featured_image": featured_image})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+

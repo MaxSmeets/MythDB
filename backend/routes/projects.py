@@ -89,3 +89,29 @@ def get_project_articles_api(slug: str):
         articles = [dict(r) for r in rows]
     
     return jsonify(articles)
+
+
+@bp.route("/<slug>/api/media", methods=["GET"])
+def get_project_media_api(slug: str):
+    """API endpoint to get all media files in a project.
+    
+    Returns JSON list of media files with filename.
+    """
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+    
+    from pathlib import Path
+    media_dir = Path("data/projects") / project["slug"] / "media"
+    
+    media_files = []
+    if media_dir.exists():
+        allowed_exts = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+        for file_path in sorted(media_dir.iterdir()):
+            if file_path.is_file() and file_path.suffix.lower() in allowed_exts:
+                media_files.append({
+                    "filename": file_path.name,
+                    "url": f"/projects/{project['slug']}/media/files/{file_path.name}"
+                })
+    
+    return jsonify(media_files)

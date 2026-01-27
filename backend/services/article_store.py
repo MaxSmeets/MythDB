@@ -59,6 +59,7 @@ def create_article(
     type_key: str,
     title: str,
     body_content: str = "",
+    featured_image: str | None = None,
 ) -> dict[str, Any]:
     """
     Creates an article record with markdown content stored in the database.
@@ -69,6 +70,7 @@ def create_article(
         type_key: The article type (npc, location, etc.)
         title: Article title
         body_content: Markdown content (defaults to empty)
+        featured_image: Optional featured image filename
     
     Returns:
         Created article dict with all metadata
@@ -88,14 +90,14 @@ def create_article(
     with db_conn() as conn:
         conn.execute(
             """
-            INSERT INTO articles (project_id, folder_id, type_id, slug, title, body_content, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+            INSERT INTO articles (project_id, folder_id, type_id, slug, title, body_content, featured_image, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
             """,
-            (project_id, folder_id, type_row["id"], slug, title, body_content, now, now),
+            (project_id, folder_id, type_row["id"], slug, title, body_content, featured_image, now, now),
         )
         row = conn.execute(
             """
-            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content, a.created_at, a.updated_at,
+            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content, a.featured_image, a.created_at, a.updated_at,
                    t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
@@ -106,7 +108,6 @@ def create_article(
         ).fetchone()
 
     return dict(row)
-
 
 def get_article_by_id(article_id: int) -> Optional[dict[str, Any]]:
     with db_conn() as conn:
@@ -130,7 +131,7 @@ def get_article_full(article_id: int) -> Optional[dict[str, Any]]:
         row = conn.execute(
             """
             SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.body_content,
-                   a.created_at, a.updated_at,
+                   a.featured_image, a.created_at, a.updated_at,
                    t.key AS type_key, t.name AS type_name
             FROM articles a
             JOIN article_types t ON t.id = a.type_id
@@ -156,6 +157,16 @@ def touch_article(article_id: int) -> None:
     now = datetime.now(tz=timezone.utc).isoformat()
     with db_conn() as conn:
         conn.execute("UPDATE articles SET updated_at = ? WHERE id = ?;", (now, article_id))
+
+
+def update_article_featured_image(article_id: int, featured_image: str | None) -> None:
+    """Update the featured image for an article."""
+    now = datetime.now(tz=timezone.utc).isoformat()
+    with db_conn() as conn:
+        conn.execute(
+            "UPDATE articles SET featured_image = ?, updated_at = ? WHERE id = ?;",
+            (featured_image, now, article_id),
+        )
 
 
 def delete_article(article_id: int) -> None:

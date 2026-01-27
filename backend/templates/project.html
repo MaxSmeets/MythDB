@@ -239,27 +239,12 @@
             </a>
             <span class="article-type">{{ article.type_name }}</span>
           </div>
-          <p class="article-meta">Updated {{ article.updated_at }}</p>
+          <p class="article-meta">{{ article.updated_at_formatted }} <span class="article-time-relative">[{{ article.updated_at_relative }}]</span></p>
         </div>
         {% endfor %}
       </div>
     </section>
     {% endif %}
-
-    
-
-    <!-- Article Types Reference -->
-    <section class="types-reference" aria-label="Article types reference">
-      <h3>Article Types</h3>
-      <div class="types-grid">
-        {% for type in types %}
-        <div class="type-card">
-          <h4>{{ type.name }}</h4>
-          <p class="type-key">{{ type.key }}</p>
-        </div>
-        {% endfor %}
-      </div>
-    </section>
   </section>
 </div>
 

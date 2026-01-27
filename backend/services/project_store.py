@@ -6,6 +6,7 @@ from typing import Any
 from pathlib import Path
 
 from db import db_conn
+from services.time_utils import format_timestamp_with_relative
 
 
 def _normalize_name(name: str) -> str:
@@ -153,10 +154,19 @@ def _get_project_statistics(project_id: int):
             (project_id,),
         ).fetchall()
     
+    # Format recent articles with clean time formatting
+    formatted_articles = []
+    for article in recent_articles:
+        article_dict = dict(article)
+        clean_time, relative_time = format_timestamp_with_relative(article_dict["updated_at"])
+        article_dict["updated_at_formatted"] = clean_time
+        article_dict["updated_at_relative"] = relative_time
+        formatted_articles.append(article_dict)
+    
     return {
         "articles_count": articles_count,
         "folders_count": folders_count,
         "total_words": total_words,
         "media_count": media_count,
-        "recent_articles": [dict(r) for r in recent_articles],
+        "recent_articles": formatted_articles,
     }

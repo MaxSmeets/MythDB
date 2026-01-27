@@ -9,6 +9,8 @@ DEFAULT_ARTICLE_TYPES = [
     ("settlement", "Settlement"),
     ("faction", "Faction"),
     ("item", "Item"),
+    ("species", "Species"),
+    ("conflict", "Conflict"),
 ]
 
 
@@ -66,6 +68,7 @@ def init_schema() -> None:
                 slug TEXT NOT NULL,
                 title TEXT NOT NULL,
                 body_content TEXT NOT NULL DEFAULT '',
+                featured_image TEXT,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL,
                 FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
@@ -82,6 +85,13 @@ def init_schema() -> None:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_project_id ON articles(project_id);")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_folder_id ON articles(folder_id);")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_type_id ON articles(type_id);")
+
+        # Migration: Add featured_image column if it doesn't exist
+        try:
+            conn.execute("ALTER TABLE articles ADD COLUMN featured_image TEXT;")
+        except:
+            # Column already exists
+            pass
 
         # Seed default article types (idempotent)
         for key, name in DEFAULT_ARTICLE_TYPES:

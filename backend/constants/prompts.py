@@ -22,4 +22,11 @@ DEFAULT_PROMPTS_PER_ARTICLE_TYPE = [
         "prompt_type": "select",
         "prompt_linked_type_key": "faction",
     },
+    {
+        "article_type_key": "npc",
+        "prompt_key": "profession",
+        "prompt_text": "Profession",
+        "prompt_type": "select",
+        "prompt_linked_type_key": "profession",
+    }
 ]

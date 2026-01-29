@@ -40,6 +40,24 @@ let currentMode = 'read';
 let pendingChanges = {}; // Store changes to save on button click
 let originalFieldValues = {}; // Store original field values for cancel
 
+// Auto-expand textarea function
+function autoExpandTextarea(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+// Initialize textarea auto-expand
+if (editorTextarea) {
+  // Set initial height
+  editorTextarea.style.height = 'auto';
+  editorTextarea.style.height = editorTextarea.scrollHeight + 'px';
+  
+  // Add event listener for input
+  editorTextarea.addEventListener('input', function() {
+    autoExpandTextarea(this);
+  });
+}
+
 // Enable/disable structured fields based on mode
 function updateFieldsState() {
   fieldInputs.forEach(input => {

@@ -1673,7 +1673,7 @@ dialog::backdrop {
 
 .editor-textarea {
   width: 100%;
-  min-height: 500px;
+  min-height: 200px;
   padding: var(--spacing-md);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-lg);
@@ -1682,7 +1682,8 @@ dialog::backdrop {
   font-family: var(--font-mono);
   font-size: 0.9rem;
   line-height: 1.6;
-  resize: vertical;
+  resize: none;
+  overflow: hidden;
   box-sizing: border-box;
 }
 

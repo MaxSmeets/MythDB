@@ -7,6 +7,28 @@ const cancelEditBtn = document.getElementById('cancelEditBtn');
 const readMode = document.getElementById('readMode');
 const editMode = document.getElementById('editMode');
 const fieldInputs = document.querySelectorAll('.field-input');
+const editorTextarea = document.getElementById('editorTextarea');
+
+// Formatting buttons
+const boldBtn = document.getElementById('boldBtn');
+const italicBtn = document.getElementById('italicBtn');
+const strikethroughBtn = document.getElementById('strikethroughBtn');
+const codeBtn = document.getElementById('codeBtn');
+const quoteBtn = document.getElementById('quoteBtn');
+const unorderedListBtn = document.getElementById('unorderedListBtn');
+const orderedListBtn = document.getElementById('orderedListBtn');
+const codeBlockBtn = document.getElementById('codeBlockBtn');
+const horizontalRuleBtn = document.getElementById('horizontalRuleBtn');
+const imageBtn = document.getElementById('imageBtn');
+const headingBtn = document.getElementById('headingBtn');
+const headingDropdown = document.getElementById('headingDropdown');
+
+// Editor image dropdown
+const editorImageDropdown = document.getElementById('editorImageDropdown');
+const editorImageSearchInput = document.getElementById('editorImageSearchInput');
+const editorImageList = document.getElementById('editorImageList');
+
+let editorMediaFiles = [];
 
 let currentMode = 'read';
 let pendingChanges = {}; // Store changes to save on button click
@@ -18,6 +40,288 @@ function updateFieldsState() {
     input.disabled = currentMode === 'read';
   });
 }
+
+// Helper function to insert markdown formatting
+function insertMarkdown(before, after = '') {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  if (selectedText) {
+    // If text is selected, wrap it
+    textarea.value = beforeCursor + before + selectedText + after + afterCursor;
+    textarea.selectionStart = start + before.length;
+    textarea.selectionEnd = start + before.length + selectedText.length;
+  } else {
+    // If no selection, just insert the markup with cursor in the middle
+    textarea.value = beforeCursor + before + after + afterCursor;
+    textarea.selectionStart = start + before.length;
+    textarea.selectionEnd = start + before.length;
+  }
+  
+  textarea.focus();
+}
+
+// Bold button
+boldBtn.addEventListener('click', () => {
+  insertMarkdown('**', '**');
+});
+
+// Italic button
+italicBtn.addEventListener('click', () => {
+  insertMarkdown('*', '*');
+});
+
+// Strikethrough button
+strikethroughBtn.addEventListener('click', () => {
+  insertMarkdown('~~', '~~');
+});
+
+// Inline code button
+codeBtn.addEventListener('click', () => {
+  insertMarkdown('`', '`');
+});
+
+// Unordered list button
+unorderedListBtn.addEventListener('click', () => {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  if (selectedText) {
+    // If text is selected, add list bullet to each line
+    const listMarkdown = '- ' + selectedText.split('\n').join('\n- ');
+    textarea.value = beforeCursor + listMarkdown + afterCursor;
+    textarea.selectionStart = start;
+    textarea.selectionEnd = start + listMarkdown.length;
+  } else {
+    // If no selection, insert list marker with cursor after it
+    const listMarkdown = '- ';
+    textarea.value = beforeCursor + listMarkdown + afterCursor;
+    textarea.selectionStart = start + listMarkdown.length;
+    textarea.selectionEnd = start + listMarkdown.length;
+  }
+  
+  textarea.focus();
+});
+
+// Ordered list button
+orderedListBtn.addEventListener('click', () => {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  if (selectedText) {
+    // If text is selected, add numbered list to each line
+    const lines = selectedText.split('\n');
+    const numberedList = lines.map((line, i) => `${i + 1}. ${line}`).join('\n');
+    textarea.value = beforeCursor + numberedList + afterCursor;
+    textarea.selectionStart = start;
+    textarea.selectionEnd = start + numberedList.length;
+  } else {
+    // If no selection, insert numbered list marker
+    const listMarkdown = '1. ';
+    textarea.value = beforeCursor + listMarkdown + afterCursor;
+    textarea.selectionStart = start + listMarkdown.length;
+    textarea.selectionEnd = start + listMarkdown.length;
+  }
+  
+  textarea.focus();
+});
+
+// Code block button
+codeBlockBtn.addEventListener('click', () => {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  if (selectedText) {
+    // If text is selected, wrap in code block
+    const codeBlockMarkdown = '```\n' + selectedText + '\n```';
+    textarea.value = beforeCursor + codeBlockMarkdown + afterCursor;
+    textarea.selectionStart = start;
+    textarea.selectionEnd = start + codeBlockMarkdown.length;
+  } else {
+    // If no selection, insert empty code block
+    const codeBlockMarkdown = '```\n\n```';
+    textarea.value = beforeCursor + codeBlockMarkdown + afterCursor;
+    textarea.selectionStart = start + 4; // Position cursor inside the code block
+    textarea.selectionEnd = start + 4;
+  }
+  
+  textarea.focus();
+});
+
+// Horizontal rule button
+horizontalRuleBtn.addEventListener('click', () => {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(start);
+  
+  // Add horizontal rule on its own line
+  const hrMarkdown = '\n---\n';
+  textarea.value = beforeCursor + hrMarkdown + afterCursor;
+  textarea.selectionStart = start + hrMarkdown.length;
+  textarea.selectionEnd = start + hrMarkdown.length;
+  
+  textarea.focus();
+});
+
+// Header buttons
+function insertHeader(level) {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  const headerPrefix = '#'.repeat(level) + ' ';
+  
+  if (selectedText) {
+    // If text is selected, wrap it with header prefix
+    textarea.value = beforeCursor + headerPrefix + selectedText + afterCursor;
+    textarea.selectionStart = start + headerPrefix.length;
+    textarea.selectionEnd = start + headerPrefix.length + selectedText.length;
+  } else {
+    // If no selection, insert header prefix with cursor ready to type
+    textarea.value = beforeCursor + headerPrefix + afterCursor;
+    textarea.selectionStart = start + headerPrefix.length;
+    textarea.selectionEnd = start + headerPrefix.length;
+  }
+  
+  textarea.focus();
+}
+
+// Header button and dropdown
+headingBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  headingDropdown.classList.toggle('hidden');
+});
+
+// Header selection items
+document.querySelectorAll('.toolbar-dropdown-item').forEach(item => {
+  item.addEventListener('click', (e) => {
+    e.preventDefault();
+    const level = parseInt(item.getAttribute('data-level'), 10);
+    insertHeader(level);
+    headingDropdown.classList.add('hidden');
+  });
+});
+
+// Close heading dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#headingBtn') && 
+      !e.target.closest('#headingDropdown')) {
+    headingDropdown.classList.add('hidden');
+  }
+});
+
+// Quote button
+quoteBtn.addEventListener('click', () => {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  if (selectedText) {
+    // If text is selected, add quote prefix to each line
+    const quoteMarkdown = '> ' + selectedText.split('\n').join('\n> ');
+    textarea.value = beforeCursor + quoteMarkdown + afterCursor;
+    textarea.selectionStart = start;
+    textarea.selectionEnd = start + quoteMarkdown.length;
+  } else {
+    // If no selection, insert quote marker with cursor after it
+    const quoteMarkdown = '> ';
+    textarea.value = beforeCursor + quoteMarkdown + afterCursor;
+    textarea.selectionStart = start + quoteMarkdown.length;
+    textarea.selectionEnd = start + quoteMarkdown.length;
+  }
+  
+  textarea.focus();
+});
+
+// Insert image markdown at cursor
+function insertImageMarkdown(filename) {
+  const textarea = editorTextarea;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  const imageMarkdown = `![image](media/${filename})`;
+  
+  textarea.value = beforeCursor + imageMarkdown + afterCursor;
+  
+  const newPosition = start + imageMarkdown.length;
+  textarea.selectionStart = newPosition;
+  textarea.selectionEnd = newPosition;
+  textarea.focus();
+}
+
+// Load editor media files
+async function loadEditorMediaFiles() {
+  const projectSlug = document.querySelector('[data-project-slug]')?.dataset.projectSlug;
+  
+  try {
+    const response = await fetch(`/projects/${projectSlug}/api/media`);
+    if (response.ok) {
+      editorMediaFiles = await response.json();
+      renderEditorMediaList(editorMediaFiles);
+    }
+  } catch (error) {
+    console.error('Failed to load media files:', error);
+  }
+}
+
+// Render editor media list
+function renderEditorMediaList(files) {
+  if (files.length === 0) {
+    editorImageList.innerHTML = '<div class="image-dropdown-empty">No images found</div>';
+    return;
+  }
+  
+  editorImageList.innerHTML = files.map(file => `
+    <div class="image-dropdown-item" data-filename="${file.filename}">
+      <img src="${file.url}" alt="${file.filename}" class="image-dropdown-thumb">
+      <div class="image-dropdown-name">${file.filename}</div>
+    </div>
+  `).join('');
+  
+  // Add click handlers to items
+  document.querySelectorAll('#editorImageList .image-dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const filename = item.dataset.filename;
+      insertImageMarkdown(filename);
+      editorImageDropdown.classList.add('hidden');
+    });
+  });
+}
+
+// Filter editor media files
+function filterEditorMediaFiles(searchTerm) {
+  const filtered = editorMediaFiles.filter(file => 
+    file.filename.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  renderEditorMediaList(filtered);
+}
+
+// Load editor media on init
+loadEditorMediaFiles();
 
 modeToggle.addEventListener('click', () => {
   if (currentMode === 'read') {
@@ -140,7 +444,6 @@ const linkArticleBtn = document.getElementById('linkArticleBtn');
 const linkDropdown = document.getElementById('linkDropdown');
 const articleSearchInput = document.getElementById('articleSearchInput');
 const articleList = document.getElementById('articleList');
-const editorTextarea = document.getElementById('editorTextarea');
 
 let allArticles = [];
 
@@ -276,9 +579,10 @@ function renderMediaList(files) {
   `).join('');
   
   // Add click handlers to items
-  document.querySelectorAll('.image-dropdown-item').forEach(item => {
+  document.querySelectorAll('#imageList .image-dropdown-item').forEach(item => {
     item.addEventListener('click', () => {
-      selectImage(item.dataset.filename);
+      const filename = item.dataset.filename;
+      selectImage(filename);
       imageDropdown.classList.add('hidden');
     });
   });
@@ -367,6 +671,28 @@ if (changeImageBtn) {
     }
   });
 }
+
+// Image button - open editor image dropdown
+imageBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  editorImageDropdown.classList.toggle('hidden');
+  if (!editorImageDropdown.classList.contains('hidden')) {
+    editorImageSearchInput.focus();
+  }
+});
+
+// Editor image search
+editorImageSearchInput.addEventListener('input', (e) => {
+  filterEditorMediaFiles(e.target.value);
+});
+
+// Close editor image dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('#imageBtn') && 
+      !e.target.closest('#editorImageDropdown')) {
+    editorImageDropdown.classList.add('hidden');
+  }
+});
 
 // Filter media as user types
 imageSearchInput.addEventListener('input', (e) => {

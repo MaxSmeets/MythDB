@@ -96,6 +96,8 @@ def get_project_by_slug(slug: str) -> dict[str, Any] | None:
 
 def _get_project_statistics(project_id: int):
     """Get statistics for a project."""
+    from datetime import datetime
+    
     with db_conn() as conn:
         # Count total articles
         articles_count = conn.execute(
@@ -122,11 +124,21 @@ def _get_project_statistics(project_id: int):
             words = len(content.split())
             total_words += words
         
-        # Get project slug to count media files
+        # Get project creation date to calculate words per day
         project_row = conn.execute(
-            "SELECT slug FROM projects WHERE id = ? LIMIT 1;",
+            "SELECT slug, created_at FROM projects WHERE id = ? LIMIT 1;",
             (project_id,),
         ).fetchone()
+        
+        words_per_day = 0
+        if project_row:
+            created_at_str = project_row["created_at"]
+            # Parse the ISO format datetime string
+            created_at = datetime.fromisoformat(created_at_str.replace('Z', '+00:00'))
+            # Use UTC now for comparison
+            today = datetime.now(created_at.tzinfo) if created_at.tzinfo else datetime.utcnow()
+            days_elapsed = max((today - created_at).days, 1)  # At least 1 day
+            words_per_day = round(total_words / days_elapsed, 1)
         
         media_count = 0
         if project_row:
@@ -149,7 +161,7 @@ def _get_project_statistics(project_id: int):
             JOIN article_types t ON a.type_id = t.id
             WHERE a.project_id = ?
             ORDER BY a.updated_at DESC
-            LIMIT 5;
+            LIMIT 3;
             """,
             (project_id,),
         ).fetchall()
@@ -167,6 +179,8 @@ def _get_project_statistics(project_id: int):
         "articles_count": articles_count,
         "folders_count": folders_count,
         "total_words": total_words,
+        "words_per_day": words_per_day,
+        "words_per_article": round(total_words / articles_count, 1) if articles_count > 0 else 0,
         "media_count": media_count,
         "recent_articles": formatted_articles,
     }

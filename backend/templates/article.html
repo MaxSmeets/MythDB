@@ -156,8 +156,44 @@
     <!-- Edit mode -->
     <div id="editMode" class="article-editor hidden">
       <div class="editor-toolbar">
-        <button type="button" id="linkArticleBtn" class="btn btn-secondary" title="Link to another article">🔗 Link Article</button>
-        <button type="button" id="tableBuilderBtn" class="btn btn-secondary" title="Insert a table">📊 Insert Table</button>
+        <div class="toolbar-group">
+          <button type="button" id="headingBtn" class="btn btn-secondary" title="Heading">H</button>
+          <div id="headingDropdown" class="toolbar-dropdown hidden">
+            <button type="button" class="toolbar-dropdown-item" data-level="1">H1 - Large</button>
+            <button type="button" class="toolbar-dropdown-item" data-level="2">H2 - Medium</button>
+            <button type="button" class="toolbar-dropdown-item" data-level="3">H3 - Small</button>
+            <button type="button" class="toolbar-dropdown-item" data-level="4">H4</button>
+            <button type="button" class="toolbar-dropdown-item" data-level="5">H5</button>
+            <button type="button" class="toolbar-dropdown-item" data-level="6">H6</button>
+          </div>
+        </div>
+        <div class="toolbar-divider"></div>
+        <button type="button" id="boldBtn" class="btn btn-secondary" title="Bold">𝐁</button>
+        <button type="button" id="italicBtn" class="btn btn-secondary" title="Italic">𝘐</button>
+        <button type="button" id="strikethroughBtn" class="btn btn-secondary" title="Strikethrough">~~</button>
+        <button type="button" id="codeBtn" class="btn btn-secondary" title="Inline code">`</button>
+        <button type="button" id="quoteBtn" class="btn btn-secondary" title="Quote">❝</button>
+        <div class="toolbar-divider"></div>
+        <button type="button" id="unorderedListBtn" class="btn btn-secondary" title="Unordered list">•</button>
+        <button type="button" id="orderedListBtn" class="btn btn-secondary" title="Ordered list">1.</button>
+        <button type="button" id="codeBlockBtn" class="btn btn-secondary" title="Code block">{ }</button>
+        <button type="button" id="horizontalRuleBtn" class="btn btn-secondary" title="Horizontal rule">—</button>
+        <div class="toolbar-divider"></div>
+        <button type="button" id="imageBtn" class="btn btn-secondary" title="Insert image">🖼️</button>
+        <button type="button" id="linkArticleBtn" class="btn btn-secondary" title="Link to another article">🔗</button>
+        <button type="button" id="tableBuilderBtn" class="btn btn-secondary" title="Insert a table">📊</button>
+        
+        <!-- Editor Image Dropdown -->
+        <div id="editorImageDropdown" class="article-link-dropdown hidden">
+          <input 
+            type="text" 
+            id="editorImageSearchInput" 
+            class="article-search" 
+            placeholder="Search images..."
+            spellcheck="false"
+          >
+          <div id="editorImageList" class="article-dropdown-list"></div>
+        </div>
         
         <!-- Article Link Dropdown -->
         <div id="linkDropdown" class="article-link-dropdown hidden">

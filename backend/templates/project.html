@@ -5,8 +5,8 @@
   {% for folder in node.folders %}
     <li class="tree-folder" data-folder-id="{{ folder.id }}">
       <div class="tree-row">
-        <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="true">
-          <span class="toggle-icon">▼</span>
+        <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="false">
+          <span class="toggle-icon">▶</span>
         </button>
         <span class="tree-name">📁 {{ folder.name }}</span>
 
@@ -24,7 +24,7 @@
       </div>
 
       {% if folder.articles and folder.articles|length > 0 %}
-      <ul class="tree-articles tree-collapsible">
+      <ul class="tree-articles tree-collapsible hidden">
         {% for article in folder.articles %}
           <li class="tree-article">
             <div class="tree-article-row">
@@ -42,7 +42,7 @@
       {% endif %}
 
       {% if folder.folders and folder.folders|length > 0 %}
-      <ul class="tree-children tree-collapsible">
+      <ul class="tree-children tree-collapsible hidden">
         {{ render_folder(folder, project_slug) }}
       </ul>
       {% endif %}
@@ -128,8 +128,8 @@
           {% for folder in tree.folders if folder.slug != 'root' %}
             <li class="tree-folder" data-folder-id="{{ folder.id }}">
               <div class="tree-row">
-                <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="true">
-                  <span class="toggle-icon">▼</span>
+                <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="false">
+                  <span class="toggle-icon">▶</span>
                 </button>
                 <span class="tree-name">📁 {{ folder.name }}</span>
 
@@ -147,7 +147,7 @@
               </div>
 
               {% if folder.articles and folder.articles|length > 0 %}
-              <ul class="tree-articles tree-collapsible">
+              <ul class="tree-articles tree-collapsible hidden">
                 {% for article in folder.articles %}
                   <li class="tree-article">
                     <div class="tree-article-row">
@@ -165,7 +165,7 @@
               {% endif %}
 
               {% if folder.folders and folder.folders|length > 0 %}
-              <ul class="tree-children tree-collapsible">
+              <ul class="tree-children tree-collapsible hidden">
                 {{ render_folder(folder, project.slug) }}
               </ul>
               {% endif %}
@@ -177,6 +177,34 @@
   </aside>
 
   <section class="project-main" aria-label="Project home">
+
+    <!-- Project Statistics -->
+    <section class="stats-section" aria-label="Project statistics">
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.folders_count }}</div>
+        <div class="stat-label">Folders</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.articles_count }}</div>
+        <div class="stat-label">Articles</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.total_words }}</div>
+        <div class="stat-label">Total Words</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.words_per_article }}</div>
+        <div class="stat-label">Words/Article</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.words_per_day }}</div>
+        <div class="stat-label">Words/Day</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">{{ stats.media_count }}</div>
+        <div class="stat-label">Media Files</div>
+      </div>
+    </section>
 
     <!-- Quick Guide -->
     <section class="quick-guide" id="quickGuide" aria-label="Getting started">
@@ -203,31 +231,14 @@
       </div>
     </section>
 
-    <!-- Project Statistics -->
-    <section class="stats-section" aria-label="Project statistics">
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.folders_count }}</div>
-        <div class="stat-label">Folders</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.articles_count }}</div>
-        <div class="stat-label">Articles</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.total_words }}</div>
-        <div class="stat-label">Words</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">{{ stats.media_count }}</div>
-        <div class="stat-label">Media Files</div>
-      </div>
-    </section>
-
     <!-- Recent Articles -->
     {% if stats.recent_articles and stats.recent_articles|length > 0 %}
-    <section class="recent-articles" aria-label="Recently updated articles">
-      <h3>Recently Updated</h3>
-      <div class="article-list">
+    <section class="recent-articles card card-collapsible" id="recentArticlesCard" aria-label="Recently updated articles">
+      <div class="card-header-row">
+        <h3 class="card-title">Recently Updated</h3>
+        <button type="button" class="btn-collapse" aria-expanded="true">▼</button>
+      </div>
+      <div class="article-list card-content" id="recentArticlesContent">
         {% for article in stats.recent_articles %}
         <div class="article-item">
           <div class="article-header">

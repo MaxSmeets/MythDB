@@ -37,9 +37,29 @@ document.addEventListener('DOMContentLoaded', function() {
       var folder = btn.closest('.tree-folder');
       if (folder) {
         var folderId = folder.getAttribute('data-folder-id');
-        var isExpanded = folder.getAttribute('data-expanded') === 'true';
+        var isExpanded = btn.getAttribute('aria-expanded') === 'true';
         var newExpanded = !isExpanded;
-        folder.setAttribute('data-expanded', newExpanded);
+        
+        // Update aria-expanded attribute
+        btn.setAttribute('aria-expanded', newExpanded);
+        
+        // Update toggle icon
+        var icon = btn.querySelector('.toggle-icon');
+        if (icon) {
+          icon.textContent = newExpanded ? '▼' : '▶';
+        }
+        
+        // Toggle visibility of child elements
+        var collapsibles = folder.querySelectorAll(':scope > .tree-articles, :scope > .tree-children');
+        collapsibles.forEach(function(el) {
+          if (newExpanded) {
+            el.classList.remove('hidden');
+          } else {
+            el.classList.add('hidden');
+          }
+        });
+        
+        // Store preference in localStorage
         localStorage.setItem('folder-' + folderId, newExpanded);
       }
     });

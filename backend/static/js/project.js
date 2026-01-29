@@ -62,3 +62,16 @@ for (const modal of [folderModal, articleModal]) {
     if (!clickedInDialog) modal.close();
   });
 }
+
+// Recently Updated section collapse/expand
+const recentArticlesCard = document.getElementById("recentArticlesCard");
+const recentArticlesContent = document.getElementById("recentArticlesContent");
+const recentArticlesCollapseBtn = recentArticlesCard?.querySelector(".btn-collapse");
+
+if (recentArticlesCollapseBtn) {
+  recentArticlesCollapseBtn.addEventListener("click", () => {
+    const isExpanded = recentArticlesCollapseBtn.getAttribute("aria-expanded") === "true";
+    recentArticlesCollapseBtn.setAttribute("aria-expanded", !isExpanded);
+    recentArticlesContent.classList.toggle("hidden");
+  });
+}

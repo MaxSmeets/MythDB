@@ -28,6 +28,12 @@ const editorImageDropdown = document.getElementById('editorImageDropdown');
 const editorImageSearchInput = document.getElementById('editorImageSearchInput');
 const editorImageList = document.getElementById('editorImageList');
 
+// Image viewer modal
+const featuredImage = document.getElementById('featuredImage');
+const imageViewerModal = document.getElementById('imageViewerModal');
+const modalImage = document.getElementById('modalImage');
+const closeImageModalBtn = document.getElementById('closeImageModal');
+
 let editorMediaFiles = [];
 
 let currentMode = 'read';
@@ -806,6 +812,38 @@ document.addEventListener('click', (e) => {
 });
 
 // ===========================
+// IMAGE VIEWER FUNCTIONALITY
+// ==========================
+
+// Open image viewer modal when clicking featured image
+if (featuredImage) {
+  featuredImage.addEventListener('click', () => {
+    modalImage.src = featuredImage.src;
+    imageViewerModal.classList.remove('hidden');
+  });
+}
+
+// Close image viewer modal
+function closeImageViewer() {
+  imageViewerModal.classList.add('hidden');
+}
+
+closeImageModalBtn?.addEventListener('click', closeImageViewer);
+
+// Close modal when clicking the overlay
+imageViewerModal?.addEventListener('click', (e) => {
+  if (e.target.id === 'imageViewerModal') {
+    closeImageViewer();
+  }
+});
+
+// Close modal on Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !imageViewerModal?.classList.contains('hidden')) {
+    closeImageViewer();
+  }
+});
+
 // TABLE BUILDER FUNCTIONALITY
 // ===========================
 

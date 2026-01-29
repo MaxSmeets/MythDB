@@ -35,6 +35,8 @@
         src="/projects/{{ project.slug }}/media/files/{{ article.featured_image }}" 
         alt="Featured image for {{ article.title }}"
         class="article-image"
+        id="featuredImage"
+        style="cursor: pointer;"
       >
       <button type="button" id="changeImageBtn" class="btn-change-image hidden">Change Image</button>
     </div>
@@ -217,6 +219,15 @@
         spellcheck="false"
       >{{ article.body_content }}</textarea>
     </div>
+  </div>
+</div>
+
+<!-- Image Viewer Modal -->
+<div id="imageViewerModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content modal-image">
+    <button type="button" id="closeImageModal" class="btn-close" aria-label="Close">✕</button>
+    <img id="modalImage" src="" alt="Full size image" class="modal-image-content">
   </div>
 </div>
 

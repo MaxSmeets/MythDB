@@ -844,6 +844,72 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+// SMART LIST CONTINUATION
+// =======================
+
+editorTextarea.addEventListener('keydown', (e) => {
+  // Only handle Enter key
+  if (e.key !== 'Enter') return;
+  
+  const textarea = e.target;
+  const cursorPos = textarea.selectionStart;
+  const textBeforeCursor = textarea.value.substring(0, cursorPos);
+  
+  // Get the current line
+  const lines = textBeforeCursor.split('\n');
+  const currentLine = lines[lines.length - 1];
+  
+  // Check if current line is an unordered list item
+  const unorderedMatch = currentLine.match(/^(\s*)-\s(.*)/);
+  if (unorderedMatch) {
+    e.preventDefault();
+    const indent = unorderedMatch[1];
+    const content = unorderedMatch[2];
+    
+    // If line only has the marker (empty item), remove the marker and exit list
+    if (!content.trim()) {
+      const beforeLine = lines.slice(0, -1).join('\n');
+      const afterCursor = textarea.value.substring(cursorPos);
+      textarea.value = beforeLine + '\n' + afterCursor;
+      textarea.selectionStart = beforeLine.length + 1;
+      textarea.selectionEnd = beforeLine.length + 1;
+    } else {
+      // Continue the list on the next line
+      const afterCursor = textarea.value.substring(cursorPos);
+      textarea.value = textBeforeCursor + '\n' + indent + '- ' + afterCursor;
+      textarea.selectionStart = cursorPos + indent.length + 3;
+      textarea.selectionEnd = cursorPos + indent.length + 3;
+    }
+    return;
+  }
+  
+  // Check if current line is an ordered list item
+  const orderedMatch = currentLine.match(/^(\s*)(\d+)\.\s(.*)/);
+  if (orderedMatch) {
+    e.preventDefault();
+    const indent = orderedMatch[1];
+    const number = parseInt(orderedMatch[2], 10);
+    const content = orderedMatch[3];
+    
+    // If line only has the marker (empty item), remove the marker and exit list
+    if (!content.trim()) {
+      const beforeLine = lines.slice(0, -1).join('\n');
+      const afterCursor = textarea.value.substring(cursorPos);
+      textarea.value = beforeLine + '\n' + afterCursor;
+      textarea.selectionStart = beforeLine.length + 1;
+      textarea.selectionEnd = beforeLine.length + 1;
+    } else {
+      // Continue the list with incremented number on the next line
+      const nextNumber = number + 1;
+      const afterCursor = textarea.value.substring(cursorPos);
+      textarea.value = textBeforeCursor + '\n' + indent + nextNumber + '. ' + afterCursor;
+      const newCursorPos = cursorPos + indent.length + nextNumber.toString().length + 3;
+      textarea.selectionStart = newCursorPos;
+      textarea.selectionEnd = newCursorPos;
+    }
+  }
+});
+
 // TABLE BUILDER FUNCTIONALITY
 // ===========================
 

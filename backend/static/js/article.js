@@ -41,6 +41,9 @@ modeToggle.addEventListener('click', () => {
       originalFieldValues[input.id] = input.value;
     });
     
+    // Initialize tooltips for the edit mode fields
+    initializeTooltips();
+    
     editMode.querySelector('textarea').focus();
   } else {
     // Switch to read (without saving)
@@ -419,3 +422,59 @@ fieldInputs.forEach(input => {
 // Initialize field states on page load
 updateFieldsState();
 
+// Tooltip functionality for select field linked types
+function initializeTooltips() {
+  const tooltipTriggers = document.querySelectorAll('.tooltip-trigger');
+  
+  tooltipTriggers.forEach(trigger => {
+    trigger.addEventListener('mouseenter', () => {
+      const tooltipKey = trigger.getAttribute('data-tooltip-key');
+      const tooltip = document.querySelector(`.tooltip-content[data-tooltip-key="${tooltipKey}"]`);
+      if (tooltip) {
+        tooltip.classList.add('visible');
+      }
+    });
+    
+    trigger.addEventListener('mouseleave', () => {
+      const tooltipKey = trigger.getAttribute('data-tooltip-key');
+      const tooltip = document.querySelector(`.tooltip-content[data-tooltip-key="${tooltipKey}"]`);
+      if (tooltip) {
+        tooltip.classList.remove('visible');
+      }
+    });
+    
+    // Also support click to toggle tooltip
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const tooltipKey = trigger.getAttribute('data-tooltip-key');
+      const tooltip = document.querySelector(`.tooltip-content[data-tooltip-key="${tooltipKey}"]`);
+      if (tooltip) {
+        tooltip.classList.toggle('visible');
+      }
+    });
+  });
+}
+
+// Initialize tooltips on page load
+initializeTooltips();
+
+// Re-initialize tooltips when switching to edit mode
+const editModeFields = document.getElementById('editModeFields');
+if (editModeFields) {
+  const observer = new MutationObserver(() => {
+    if (!editModeFields.classList.contains('hidden')) {
+      initializeTooltips();
+    }
+  });
+  
+  observer.observe(editModeFields, { attributes: true, attributeFilter: ['class'] });
+}
+
+// Close tooltip when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.tooltip-trigger')) {
+    document.querySelectorAll('.tooltip-content').forEach(tooltip => {
+      tooltip.classList.remove('visible');
+    });
+  }
+});

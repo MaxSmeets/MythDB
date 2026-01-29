@@ -89,7 +89,17 @@
       <div id="editModeFields" class="structured-fields hidden">
         {% for prompt in prompts %}
         <div class="field-group" data-prompt-id="{{ prompt.id }}" data-prompt-key="{{ prompt.key }}" data-prompt-type="{{ prompt.type }}">
-          <label class="field-label">{{ prompt.text }}</label>
+          <div class="field-label-container">
+            <label class="field-label">{{ prompt.text }}</label>
+            {% if prompt.type == "select" and prompt_linked_type_keys.get(prompt.key) %}
+            <div class="tooltip-trigger" data-tooltip-key="{{ prompt.key }}" data-linked-type="{{ prompt_linked_type_keys.get(prompt.key) }}" title="Show article types this field links to">
+              ⓘ
+            </div>
+            <div class="tooltip-content" data-tooltip-key="{{ prompt.key }}">
+              <strong>Links to:</strong> {{ prompt_linked_type_keys.get(prompt.key).replace('_', ' ').title() }}
+            </div>
+            {% endif %}
+          </div>
           
           {% if prompt.type == "text" %}
           <input 

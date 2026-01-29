@@ -95,14 +95,16 @@ def article_view(slug: str, article_id: int):
     prompts = get_prompts_for_article_type(article["type_id"])
     prompt_values = get_prompt_values_for_article(article_id)
     
-    # For each select prompt, get linked articles
+    # For each select prompt, get linked articles and build tooltip data
     linked_articles_by_key = {}
+    prompt_linked_type_keys = {}  # Map prompt key to linked type key for tooltips
     for prompt in prompts:
         if prompt["type"] == "select" and prompt["linked_style_key"]:
             linked_articles_by_key[prompt["key"]] = get_linked_articles(
                 prompt["linked_style_key"],
                 int(project["id"])
             )
+            prompt_linked_type_keys[prompt["key"]] = prompt["linked_style_key"]
 
     return render_template(
         "article.html",
@@ -113,6 +115,7 @@ def article_view(slug: str, article_id: int):
         prompts=prompts,
         prompt_values=prompt_values,
         linked_articles_by_key=linked_articles_by_key,
+        prompt_linked_type_keys=prompt_linked_type_keys,
     )
 
 

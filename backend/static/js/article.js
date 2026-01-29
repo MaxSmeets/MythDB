@@ -478,3 +478,162 @@ document.addEventListener('click', (e) => {
     });
   }
 });
+
+// ===========================
+// TABLE BUILDER FUNCTIONALITY
+// ===========================
+
+const tableBuilderBtn = document.getElementById('tableBuilderBtn');
+const tableBuilderModal = document.getElementById('tableBuilderModal');
+const closeTableModal = document.getElementById('closeTableModal');
+const cancelTableBtn = document.getElementById('cancelTableBtn');
+const insertTableBtn = document.getElementById('insertTableBtn');
+const tableRowsInput = document.getElementById('tableRows');
+const tableColumnsInput = document.getElementById('tableColumns');
+const tablePreviewContainer = document.getElementById('tablePreviewContainer');
+
+let currentTableData = []; // Store table cell data
+
+// Open table builder modal
+tableBuilderBtn.addEventListener('click', () => {
+  tableBuilderModal.classList.remove('hidden');
+  tableRowsInput.focus();
+  generateTablePreview();
+});
+
+// Close modal
+function closeModal() {
+  tableBuilderModal.classList.add('hidden');
+  currentTableData = [];
+}
+
+closeTableModal.addEventListener('click', closeModal);
+cancelTableBtn.addEventListener('click', closeModal);
+
+// Close modal when clicking the overlay
+document.getElementById('tableBuilderModal').addEventListener('click', (e) => {
+  if (e.target.id === 'tableBuilderModal') {
+    closeModal();
+  }
+});
+
+// Generate table preview
+function generateTablePreview() {
+  const rows = parseInt(tableRowsInput.value) || 1;
+  const cols = parseInt(tableColumnsInput.value) || 1;
+  
+  // Initialize table data if needed
+  if (currentTableData.length === 0) {
+    currentTableData = Array(rows).fill(null).map(() => Array(cols).fill(''));
+  }
+  
+  // Update table data dimensions if rows/cols changed
+  if (currentTableData.length !== rows) {
+    if (rows > currentTableData.length) {
+      // Add new rows
+      for (let i = currentTableData.length; i < rows; i++) {
+        currentTableData.push(Array(cols).fill(''));
+      }
+    } else {
+      // Remove rows
+      currentTableData = currentTableData.slice(0, rows);
+    }
+  }
+  
+  // Update columns in existing rows
+  currentTableData.forEach(row => {
+    if (row.length !== cols) {
+      if (cols > row.length) {
+        // Add new columns
+        for (let i = row.length; i < cols; i++) {
+          row.push('');
+        }
+      } else {
+        // Remove columns
+        row.length = cols;
+      }
+    }
+  });
+  
+  // Render preview
+  const table = document.createElement('table');
+  table.className = 'table-builder-preview';
+  
+  currentTableData.forEach((row, rowIndex) => {
+    const tr = document.createElement('tr');
+    row.forEach((cell, colIndex) => {
+      const td = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = `Row ${rowIndex + 1}, Col ${colIndex + 1}`;
+      input.value = cell;
+      input.className = 'table-cell-input';
+      
+      // Update cell data when user types
+      input.addEventListener('input', (e) => {
+        currentTableData[rowIndex][colIndex] = e.target.value;
+      });
+      
+      td.appendChild(input);
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  
+  tablePreviewContainer.innerHTML = '';
+  tablePreviewContainer.appendChild(table);
+}
+
+// Update preview when rows/columns change
+tableRowsInput.addEventListener('change', generateTablePreview);
+tableColumnsInput.addEventListener('change', generateTablePreview);
+
+// Convert table data to markdown
+function tableToMarkdown(tableData) {
+  if (tableData.length === 0) return '';
+  
+  const rows = tableData.length;
+  const cols = tableData[0].length;
+  
+  let markdown = '';
+  
+  // Add each row
+  tableData.forEach((row) => {
+    markdown += '| ' + row.join(' | ') + ' |\n';
+    
+    // Add separator after first row
+    if (tableData.indexOf(row) === 0) {
+      markdown += '| ' + Array(cols).fill('---').join(' | ') + ' |\n';
+    }
+  });
+  
+  return markdown;
+}
+
+// Insert table into editor
+insertTableBtn.addEventListener('click', () => {
+  if (currentTableData.length === 0 || currentTableData[0].length === 0) {
+    alert('Please configure the table dimensions');
+    return;
+  }
+  
+  const markdownTable = tableToMarkdown(currentTableData);
+  const textarea = document.getElementById('editorTextarea');
+  
+  // Insert at cursor position
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const beforeCursor = textarea.value.substring(0, start);
+  const afterCursor = textarea.value.substring(end);
+  
+  textarea.value = beforeCursor + '\n\n' + markdownTable + '\n\n' + afterCursor;
+  
+  // Set cursor position after the table
+  const newPosition = start + markdownTable.length + 4; // +4 for the newlines
+  textarea.selectionStart = newPosition;
+  textarea.selectionEnd = newPosition;
+  textarea.focus();
+  
+  closeModal();
+});
+

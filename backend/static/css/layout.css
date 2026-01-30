@@ -329,18 +329,20 @@ dialog {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   max-height: 90vh;
+  z-index: 1000;
 }
 
 dialog::backdrop {
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(2px);
+  z-index: 999;
 }
 
 .modal {
   display: flex;
   flex-direction: column;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   box-sizing: border-box;
 }
 
@@ -506,7 +508,7 @@ dialog::backdrop {
   height: fit-content;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Sidebar Tabs */
@@ -542,7 +544,7 @@ dialog::backdrop {
 
 .sidebar-tab-content {
   flex: 1;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
 }
@@ -551,8 +553,8 @@ dialog::backdrop {
   display: none;
   height: 100%;
   padding: var(--spacing-lg);
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: visible;
+  overflow-x: visible;
 }
 
 .sidebar-tab-panel.active {
@@ -1066,6 +1068,7 @@ dialog::backdrop {
   list-style: none;
   padding-left: 0;
   margin: 0;
+  overflow: visible;
 }
 
 .tree-row {

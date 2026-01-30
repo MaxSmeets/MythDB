@@ -10,6 +10,7 @@ from services.article_store import (
     update_article_content,
     update_article_featured_image,
     delete_article,
+    rename_article,
     list_article_types,
 )
 from services.prompt_store import (
@@ -200,5 +201,25 @@ def set_article_prompt(slug: str, article_id: int):
         save_prompt_value(article_id, prompt_id, value, linked_article_id)
         return jsonify({"success": True})
     except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400
+
+
+@bp.route("/<slug>/articles/<int:article_id>/rename", methods=["POST"])
+def rename_article_route(slug: str, article_id: int):
+    """Rename an article."""
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    article = get_article_full(article_id)
+    if not article or article["project_id"] != int(project["id"]):
+        abort(404)
+
+    new_title = request.form.get("title", "").strip()
+    
+    try:
+        article = rename_article(article_id, new_title)
+        return jsonify({"success": True, "article": article})
+    except ValueError as e:
         return jsonify({"success": False, "error": str(e)}), 400
 

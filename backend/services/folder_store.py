@@ -238,3 +238,41 @@ def delete_folder(folder_id: int) -> None:
         
         # Folder is empty, safe to delete
         conn.execute("DELETE FROM folders WHERE id = ?;", (folder_id,))
+
+
+def rename_folder(folder_id: int, new_name: str) -> dict[str, Any]:
+    """
+    Rename a folder.
+    
+    Args:
+        folder_id: The folder to rename
+        new_name: The new name for the folder
+    
+    Returns:
+        Updated folder dict
+        
+    Raises:
+        ValueError: If folder not found or name is empty
+    """
+    folder = get_folder_by_id(folder_id)
+    if not folder:
+        raise ValueError("Folder not found.")
+    
+    new_name = (new_name or "").strip()
+    if not new_name:
+        raise ValueError("Folder name is required.")
+    
+    new_base_slug = slugify(new_name)
+    new_slug = unique_folder_slug(folder["project_id"], folder["parent_id"], new_base_slug)
+    
+    with db_conn() as conn:
+        conn.execute(
+            "UPDATE folders SET name = ?, slug = ? WHERE id = ?;",
+            (new_name, new_slug, folder_id),
+        )
+        row = conn.execute(
+            "SELECT id, project_id, parent_id, name, slug, created_at FROM folders WHERE id = ? LIMIT 1;",
+            (folder_id,),
+        ).fetchone()
+    
+    return dict(row)

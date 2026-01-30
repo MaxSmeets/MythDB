@@ -26,7 +26,7 @@
       {% if folder.articles and folder.articles|length > 0 %}
       <ul class="tree-articles tree-collapsible hidden">
         {% for article in folder.articles %}
-          <li class="tree-article">
+          <li class="tree-article" data-article-id="{{ article.id }}">
             <div class="tree-article-row">
               <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}">{{ article.title }}</a></span>
               <div class="tree-article-actions">
@@ -108,7 +108,7 @@
               {% if tree.articles and tree.articles|length > 0 %}
               <ul class="tree-articles">
                 {% for article in tree.articles %}
-                  <li class="tree-article">
+                  <li class="tree-article" data-article-id="{{ article.id }}">
                     <div class="tree-article-row">
                       <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
                       <div class="tree-article-actions">
@@ -157,7 +157,7 @@
                   {% if folder.articles and folder.articles|length > 0 %}
                   <ul class="tree-articles tree-collapsible hidden">
                     {% for article in folder.articles %}
-                      <li class="tree-article">
+                      <li class="tree-article" data-article-id="{{ article.id }}">
                         <div class="tree-article-row">
                           <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
                           <div class="tree-article-actions">

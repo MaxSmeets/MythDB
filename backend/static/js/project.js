@@ -155,11 +155,10 @@ document.addEventListener("click", (e) => {
 // Click outside to close dialogs
 for (const modal of [folderModal, articleModal]) {
   modal.addEventListener("click", (e) => {
-    const rect = modal.getBoundingClientRect();
-    const clickedInDialog =
-      rect.top <= e.clientY && e.clientY <= rect.top + rect.height &&
-      rect.left <= e.clientX && e.clientX <= rect.left + rect.width;
-    if (!clickedInDialog) modal.close();
+    // Only close if clicking on the backdrop (the dialog element itself, not its children)
+    if (e.target === modal) {
+      modal.close();
+    }
   });
 }
 
@@ -176,3 +175,75 @@ if (recentArticlesHeader) {
     recentArticlesContent.classList.toggle("hidden");
   });
 }
+
+// Rename folder functionality
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest('button[data-action="rename-folder"]');
+  if (!btn) return;
+  
+  const folderId = btn.getAttribute("data-folder-id");
+  const folderItem = document.querySelector(`.tree-folder[data-folder-id="${folderId}"]`);
+  if (!folderItem) return;
+  
+  const nameSpan = folderItem.querySelector(".tree-name");
+  const currentName = nameSpan.textContent.replace("📁 ", "").trim();
+  
+  const newName = prompt("Enter new folder name:", currentName);
+  if (!newName || newName.trim() === currentName) return;
+  
+  fetch(`/projects/${projectSlug}/folders/${folderId}/rename`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `name=${encodeURIComponent(newName.trim())}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      nameSpan.textContent = `📁 ${data.folder.name}`;
+    } else {
+      alert("Error renaming folder: " + (data.error || "Unknown error"));
+    }
+  })
+  .catch(err => {
+    console.error("Rename error:", err);
+    alert("Error renaming folder");
+  });
+});
+
+// Rename article functionality
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest(".article-action-btn:not(.article-action-danger)");
+  if (!btn) return;
+  
+  const articleItem = btn.closest(".tree-article");
+  if (!articleItem) return;
+  
+  const articleId = parseInt(articleItem.getAttribute("data-article-id") || "0");
+  if (!articleId) return;
+  
+  const titleLink = articleItem.querySelector(".tree-article-name a");
+  if (!titleLink) return;
+  
+  const currentName = titleLink.textContent.trim();
+  const newName = prompt("Enter new article title:", currentName);
+  if (!newName || newName.trim() === currentName) return;
+  
+  fetch(`/projects/${projectSlug}/articles/${articleId}/rename`, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: `title=${encodeURIComponent(newName.trim())}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      titleLink.textContent = data.article.title;
+    } else {
+      alert("Error renaming article: " + (data.error || "Unknown error"));
+    }
+  })
+  .catch(err => {
+    console.error("Rename error:", err);
+    alert("Error renaming article");
+  });
+});
+

@@ -1,8 +1,8 @@
 """Folder management routes."""
 
-from flask import Blueprint, request, redirect, url_for, abort
+from flask import Blueprint, request, redirect, url_for, abort, jsonify
 from services.project_store import get_project_by_slug
-from services.folder_store import create_folder, delete_folder
+from services.folder_store import create_folder, delete_folder, rename_folder
 
 bp = Blueprint("folders", __name__, url_prefix="/projects")
 
@@ -38,3 +38,19 @@ def delete_folder_route(slug: str, folder_id: int):
         return redirect(url_for("projects.project_home", slug=slug))
     except ValueError as e:
         return redirect(url_for("projects.project_home", slug=slug, error=str(e)))
+
+
+@bp.route("/<slug>/folders/<int:folder_id>/rename", methods=["POST"])
+def rename_folder_route(slug: str, folder_id: int):
+    """Rename a folder."""
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    new_name = request.form.get("name", "").strip()
+    
+    try:
+        folder = rename_folder(folder_id, new_name)
+        return jsonify({"success": True, "folder": folder})
+    except ValueError as e:
+        return jsonify({"success": False, "error": str(e)}), 400

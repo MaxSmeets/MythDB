@@ -173,3 +173,50 @@ def delete_article(article_id: int) -> None:
     """Delete an article from the database."""
     with db_conn() as conn:
         conn.execute("DELETE FROM articles WHERE id = ?;", (article_id,))
+
+
+def rename_article(article_id: int, new_title: str) -> dict[str, Any]:
+    """
+    Rename an article.
+    
+    Args:
+        article_id: The article to rename
+        new_title: The new title for the article
+    
+    Returns:
+        Updated article dict
+        
+    Raises:
+        ValueError: If article not found or title is empty
+    """
+    article = get_article_by_id(article_id)
+    if not article:
+        raise ValueError("Article not found.")
+    
+    new_title = (new_title or "").strip()
+    if not new_title:
+        raise ValueError("Article title is required.")
+    
+    new_base_slug = slugify(new_title)
+    new_slug = unique_article_slug(article["project_id"], new_base_slug)
+    
+    now = datetime.now(tz=timezone.utc).isoformat()
+    
+    with db_conn() as conn:
+        conn.execute(
+            "UPDATE articles SET title = ?, slug = ?, updated_at = ? WHERE id = ?;",
+            (new_title, new_slug, now, article_id),
+        )
+        row = conn.execute(
+            """
+            SELECT a.id, a.project_id, a.folder_id, a.slug, a.title, a.created_at, a.updated_at,
+                   a.type_id, t.key AS type_key, t.name AS type_name
+            FROM articles a
+            JOIN article_types t ON t.id = a.type_id
+            WHERE a.id = ?
+            LIMIT 1;
+            """,
+            (article_id,),
+        ).fetchone()
+    
+    return dict(row)

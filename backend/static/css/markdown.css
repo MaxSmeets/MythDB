@@ -314,3 +314,113 @@
 .markdown h3 + blockquote {
   margin-top: 0.25rem;
 }
+
+/* ===========================
+   Keyboard Shortcuts Modal
+   =========================== */
+
+#keyboardShortcutsModal {
+  border: 1px solid var(--border-strong);
+  padding: 0;
+  border-radius: var(--radius-2xl);
+  width: min(900px, calc(100vw - 2rem));
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+#keyboardShortcutsModal::backdrop {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+  z-index: 999;
+}
+
+.shortcuts-modal .modal-header {
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.shortcuts-modal .modal-header h2 {
+  margin: 0;
+  font-size: 1.25em;
+  font-weight: 700;
+}
+
+.shortcuts-modal .btn-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.shortcuts-modal .btn-close:hover {
+  color: var(--text-primary);
+  background: var(--bg-surface-2);
+  border-radius: var(--radius-lg);
+}
+
+.shortcuts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+@media (max-width: 700px) {
+  .shortcuts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shortcuts-section h3 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 0.95em;
+  font-weight: 700;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.shortcuts-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.shortcut-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: 0.9em;
+}
+
+.shortcut-item kbd {
+  background: var(--bg-surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  padding: 0.3em 0.6em;
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.shortcut-item span {
+  color: var(--text-secondary);
+}

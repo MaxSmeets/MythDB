@@ -94,9 +94,25 @@ boldBtn.addEventListener('click', () => {
   insertMarkdown('**', '**');
 });
 
+// Hotkey for bold: ALT+B
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'b') {
+    e.preventDefault();
+    insertMarkdown('**', '**');
+  }
+});
+
 // Italic button
 italicBtn.addEventListener('click', () => {
   insertMarkdown('*', '*');
+});
+
+// Hotkey for italic: ALT+I
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'i' && !e.ctrlKey && !e.shiftKey) {
+    e.preventDefault();
+    insertMarkdown('*', '*');
+  }
 });
 
 // Strikethrough button
@@ -104,9 +120,25 @@ strikethroughBtn.addEventListener('click', () => {
   insertMarkdown('~~', '~~');
 });
 
+// Hotkey for strikethrough: ALT+S
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 's') {
+    e.preventDefault();
+    insertMarkdown('~~', '~~');
+  }
+});
+
 // Inline code button
 codeBtn.addEventListener('click', () => {
   insertMarkdown('`', '`');
+});
+
+// Hotkey for inline code: ALT+`
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key === '`') {
+    e.preventDefault();
+    insertMarkdown('`', '`');
+  }
 });
 
 // Unordered list button
@@ -133,6 +165,14 @@ unorderedListBtn.addEventListener('click', () => {
   }
   
   textarea.focus();
+});
+
+// Hotkey for unordered list: ALT+U
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'u') {
+    e.preventDefault();
+    unorderedListBtn.click();
+  }
 });
 
 // Ordered list button
@@ -162,6 +202,14 @@ orderedListBtn.addEventListener('click', () => {
   textarea.focus();
 });
 
+// Hotkey for ordered list: ALT+O
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'o') {
+    e.preventDefault();
+    orderedListBtn.click();
+  }
+});
+
 // Code block button
 codeBlockBtn.addEventListener('click', () => {
   const textarea = editorTextarea;
@@ -188,6 +236,15 @@ codeBlockBtn.addEventListener('click', () => {
   textarea.focus();
 });
 
+// Hotkey for code block: ALT+SHIFT+`
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.shiftKey && e.key === '~') {
+    // ~ is SHIFT+` on most keyboards
+    e.preventDefault();
+    codeBlockBtn.click();
+  }
+});
+
 // Horizontal rule button
 horizontalRuleBtn.addEventListener('click', () => {
   const textarea = editorTextarea;
@@ -202,6 +259,14 @@ horizontalRuleBtn.addEventListener('click', () => {
   textarea.selectionEnd = start + hrMarkdown.length;
   
   textarea.focus();
+});
+
+// Hotkey for horizontal rule: ALT+-
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && (e.key === '-' || e.key === '_')) {
+    e.preventDefault();
+    horizontalRuleBtn.click();
+  }
 });
 
 // Header buttons
@@ -234,6 +299,30 @@ function insertHeader(level) {
 headingBtn.addEventListener('click', (e) => {
   e.preventDefault();
   headingDropdown.classList.toggle('hidden');
+});
+
+// Hotkey for opening heading dropdown: ALT+H
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'h') {
+    e.preventDefault();
+    headingDropdown.classList.toggle('hidden');
+    if (!headingDropdown.classList.contains('hidden')) {
+      // Focus the first heading button
+      headingDropdown.querySelector('.toolbar-dropdown-item').focus();
+    }
+  }
+});
+
+// Hotkeys for heading levels 1-6 when dropdown is open
+document.addEventListener('keydown', (e) => {
+  if (!headingDropdown.classList.contains('hidden')) {
+    const key = parseInt(e.key, 10);
+    if (key >= 1 && key <= 6) {
+      e.preventDefault();
+      insertHeader(key);
+      headingDropdown.classList.add('hidden');
+    }
+  }
 });
 
 // Header selection items
@@ -278,6 +367,14 @@ quoteBtn.addEventListener('click', () => {
   }
   
   textarea.focus();
+});
+
+// Hotkey for quote: ALT+Q
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'q') {
+    e.preventDefault();
+    quoteBtn.click();
+  }
 });
 
 // Insert image markdown at cursor
@@ -545,6 +642,14 @@ linkArticleBtn.addEventListener('click', (e) => {
   }
 });
 
+// Hotkey for link to article: ALT+L
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 'l') {
+    e.preventDefault();
+    linkArticleBtn.click();
+  }
+});
+
 // Filter articles as user types
 articleSearchInput.addEventListener('input', (e) => {
   filterArticles(e.target.value);
@@ -702,6 +807,14 @@ imageBtn.addEventListener('click', (e) => {
   editorImageDropdown.classList.toggle('hidden');
   if (!editorImageDropdown.classList.contains('hidden')) {
     editorImageSearchInput.focus();
+  }
+});
+
+// Hotkey for image: ALT+SHIFT+I
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.shiftKey && e.key.toUpperCase() === 'I') {
+    e.preventDefault();
+    imageBtn.click();
   }
 });
 
@@ -949,6 +1062,14 @@ tableBuilderBtn.addEventListener('click', () => {
   generateTablePreview();
 });
 
+// Hotkey for table: ALT+T
+document.addEventListener('keydown', (e) => {
+  if (e.altKey && e.key.toLowerCase() === 't') {
+    e.preventDefault();
+    tableBuilderBtn.click();
+  }
+});
+
 // Close modal
 function closeModal() {
   tableBuilderModal.classList.add('hidden');
@@ -1085,3 +1206,32 @@ insertTableBtn.addEventListener('click', () => {
   closeModal();
 });
 
+// KEYBOARD SHORTCUTS MODAL
+// ======================
+const keyboardShortcutsBtn = document.getElementById('keyboardShortcutsBtn');
+const keyboardShortcutsModal = document.getElementById('keyboardShortcutsModal');
+const closeShortcutsModal = document.getElementById('closeShortcutsModal');
+
+// Open shortcuts modal
+keyboardShortcutsBtn.addEventListener('click', () => {
+  keyboardShortcutsModal.showModal();
+});
+
+// Close shortcuts modal
+closeShortcutsModal.addEventListener('click', () => {
+  keyboardShortcutsModal.close();
+});
+
+// Close modal when clicking on backdrop
+keyboardShortcutsModal.addEventListener('click', (e) => {
+  if (e.target === keyboardShortcutsModal) {
+    keyboardShortcutsModal.close();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && !keyboardShortcutsModal.classList.contains('hidden')) {
+    keyboardShortcutsModal.close();
+  }
+});

@@ -184,6 +184,8 @@
         <button type="button" id="imageBtn" class="btn btn-secondary" title="Insert image">🖼️</button>
         <button type="button" id="linkArticleBtn" class="btn btn-secondary" title="Link to another article">🔗</button>
         <button type="button" id="tableBuilderBtn" class="btn btn-secondary" title="Insert a table">📊</button>
+        <div class="toolbar-divider"></div>
+        <button type="button" id="keyboardShortcutsBtn" class="btn btn-secondary" title="Keyboard shortcuts">?</button>
         
         <!-- Editor Image Dropdown -->
         <div id="editorImageDropdown" class="article-link-dropdown hidden">
@@ -258,6 +260,93 @@
     </div>
   </div>
 </div>
+
+<!-- Keyboard Shortcuts Modal -->
+<dialog id="keyboardShortcutsModal" class="shortcuts-modal">
+  <div class="modal-header">
+    <h2>Keyboard Shortcuts</h2>
+    <button type="button" id="closeShortcutsModal" class="btn-close" aria-label="Close">✕</button>
+  </div>
+  <div class="modal-body shortcuts-grid">
+      <div class="shortcuts-section">
+        <h3>Text Formatting</h3>
+        <div class="shortcuts-list">
+          <div class="shortcut-item">
+            <kbd>ALT+B</kbd>
+            <span>Bold</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+I</kbd>
+            <span>Italic</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+S</kbd>
+            <span>Strikethrough</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+`</kbd>
+            <span>Inline Code</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shortcuts-section">
+        <h3>Headings & Quotes</h3>
+        <div class="shortcuts-list">
+          <div class="shortcut-item">
+            <kbd>ALT+H</kbd>
+            <span>Open Headings (then 1-6)</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+Q</kbd>
+            <span>Quote</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shortcuts-section">
+        <h3>Lists & Blocks</h3>
+        <div class="shortcuts-list">
+          <div class="shortcut-item">
+            <kbd>ALT+U</kbd>
+            <span>Unordered List</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+O</kbd>
+            <span>Ordered List</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+SHIFT+`</kbd>
+            <span>Code Block</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+-</kbd>
+            <span>Horizontal Rule</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="shortcuts-section">
+        <h3>Media & Links</h3>
+        <div class="shortcuts-list">
+          <div class="shortcut-item">
+            <kbd>ALT+SHIFT+I</kbd>
+            <span>Insert Image</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+L</kbd>
+            <span>Link to Article</span>
+          </div>
+          <div class="shortcut-item">
+            <kbd>ALT+T</kbd>
+            <span>Insert Table</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
 {% endblock %}
 
 {% block scripts %}

@@ -166,10 +166,11 @@ for (const modal of [folderModal, articleModal]) {
 // Recently Updated section collapse/expand
 const recentArticlesCard = document.getElementById("recentArticlesCard");
 const recentArticlesContent = document.getElementById("recentArticlesContent");
+const recentArticlesHeader = recentArticlesCard?.querySelector(".card-header-row");
 const recentArticlesCollapseBtn = recentArticlesCard?.querySelector(".btn-collapse");
 
-if (recentArticlesCollapseBtn) {
-  recentArticlesCollapseBtn.addEventListener("click", () => {
+if (recentArticlesHeader) {
+  recentArticlesHeader.addEventListener("click", () => {
     const isExpanded = recentArticlesCollapseBtn.getAttribute("aria-expanded") === "true";
     recentArticlesCollapseBtn.setAttribute("aria-expanded", !isExpanded);
     recentArticlesContent.classList.toggle("hidden");

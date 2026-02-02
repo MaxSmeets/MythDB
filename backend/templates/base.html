@@ -1,52 +1,70 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
 
     <!-- TITLE COMES FROM CHILD TEMPLATE -->
     <title>{% block title %}MythDB (default title){% endblock %}</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" />
 
     <!-- GLOBAL CSS: loaded on every page -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layout.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/markdown.css') }}">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/main.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/layout.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/markdown.css') }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/markdown-editor.css') }}"
+    />
 
     <!-- OPTIONAL PER-PAGE EXTRA HEAD CONTENT -->
     {% block head %}
     <!-- e.g. page-specific CSS goes here -->
     {% endblock %}
-</head>
-<body>
-<div class="app-layout">
+  </head>
+  <body>
+    <div class="app-layout">
+      <header class="topbar">
+        <div class="brand">
+          <a href="{{ url_for('pages.index') }}"
+            ><img
+              src="{{ url_for('static', filename='mythdb.png') }}"
+              style="height: 40px"
+              alt="MythDB Logo"
+          /></a>
+        </div>
 
-  <header class="topbar">
-      <div class="brand">
-          <a href="{{ url_for('pages.index') }}"><img src="{{ url_for('static', filename='mythdb.png') }}" style="height: 40px;" alt="MythDB Logo"></a>
-      </div>
-
-      <nav class="nav">
-          <a href="{{ url_for('pages.admin_dashboard') }}"
-             class="{% if active_page == 'admin' %}active{% endif %}">
-              Admin
+        <nav class="nav">
+          <a
+            href="{{ url_for('pages.admin_dashboard') }}"
+            class="{% if active_page == 'admin' %}active{% endif %}"
+          >
+            Admin
           </a>
-          <a href="{{ url_for('projects.projects_overview') }}"
-             class="{% if active_page == 'projects' %}active{% endif %}">
-              Projects
+          <a
+            href="{{ url_for('projects.projects_overview') }}"
+            class="{% if active_page == 'projects' %}active{% endif %}"
+          >
+            Projects
           </a>
-      </nav>
-  </header>
+        </nav>
+      </header>
 
-  <main class="main-content">
-      {% block content %}{% endblock %}
-  </main>
-</div>
+      <main class="main-content">{% block content %}{% endblock %}</main>
+    </div>
 
-<script src="{{ url_for('static', filename='js/base.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/base.js') }}"></script>
 
-{% block scripts %}{% endblock %}
-</body>
-
+    {% block scripts %}{% endblock %}
+  </body>
 </html>

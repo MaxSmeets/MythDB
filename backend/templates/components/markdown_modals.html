@@ -1,0 +1,137 @@
+{% macro render_markdown_modals() %}
+<!-- Table Builder Modal -->
+<div id="tableBuilderModal" class="modal hidden">
+  <div class="modal-overlay"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Table Builder</h2>
+      <button
+        type="button"
+        id="closeTableModal"
+        class="btn-close"
+        aria-label="Close"
+      >
+        ✕
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="table-builder-form">
+        <div class="form-group">
+          <label for="tableRows">Rows:</label>
+          <input
+            type="number"
+            id="tableRows"
+            min="1"
+            max="50"
+            value="3"
+            class="form-input"
+          />
+        </div>
+        <div class="form-group">
+          <label for="tableColumns">Columns:</label>
+          <input
+            type="number"
+            id="tableColumns"
+            min="1"
+            max="20"
+            value="3"
+            class="form-input"
+          />
+        </div>
+      </div>
+      <div id="tablePreviewContainer" class="table-preview-container"></div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" id="cancelTableBtn" class="btn btn-secondary">
+        Cancel
+      </button>
+      <button type="button" id="insertTableBtn" class="btn btn-primary">
+        Insert Table
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard Shortcuts Modal -->
+<dialog id="keyboardShortcutsModal" class="shortcuts-modal">
+  <div class="modal-header">
+    <h2>Keyboard Shortcuts</h2>
+    <form method="dialog">
+      <button class="btn-close" aria-label="Close">✕</button>
+    </form>
+  </div>
+  <div class="modal-body shortcuts-grid">
+    <div class="shortcuts-section">
+      <h3>Text Formatting</h3>
+      <div class="shortcuts-list">
+        <div class="shortcut-item">
+          <kbd>ALT+B</kbd>
+          <span>Bold</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+I</kbd>
+          <span>Italic</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+S</kbd>
+          <span>Strikethrough</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+`</kbd>
+          <span>Inline Code</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="shortcuts-section">
+      <h3>Headings & Quotes</h3>
+      <div class="shortcuts-list">
+        <div class="shortcut-item">
+          <kbd>ALT+H</kbd>
+          <span>Open Headings (then 1-6)</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+Q</kbd>
+          <span>Blockquote</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="shortcuts-section">
+      <h3>Lists & Structure</h3>
+      <div class="shortcuts-list">
+        <div class="shortcut-item">
+          <kbd>ALT+U</kbd>
+          <span>Unordered List</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+O</kbd>
+          <span>Ordered List</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+-</kbd>
+          <span>Horizontal Rule</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>Shift+Enter</kbd>
+          <span>Smart List (in list)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="shortcuts-section">
+      <h3>Insert</h3>
+      <div class="shortcuts-list">
+        <div class="shortcut-item">
+          <kbd>ALT+L</kbd>
+          <span>Link to Article</span>
+        </div>
+        <div class="shortcut-item">
+          <kbd>ALT+T</kbd>
+          <span>Table Builder</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+{% endmacro %}

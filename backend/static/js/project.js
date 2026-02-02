@@ -266,46 +266,36 @@ document.addEventListener("click", (e) => {
 const projectModeToggle = document.getElementById("projectModeToggle");
 const projectReadMode = document.getElementById("projectReadMode");
 const projectEditMode = document.getElementById("projectEditMode");
-const projectEditorTextarea = document.getElementById("projectEditorTextarea");
-const projectSaveBtn = document.getElementById("projectSaveBtn");
+const projectReadmeForm = document.getElementById("projectReadmeForm");
 const projectCancelEditBtn = document.getElementById("projectCancelEditBtn");
+const projectSaveBtn = document.getElementById("projectSaveBtn");
+const projectEditorTextarea = document.getElementById("projectEditorTextarea");
 
-let currentMode = "read";
 let originalDescription = "";
 
 // Toggle between read and edit mode
 if (projectModeToggle) {
   projectModeToggle.addEventListener("click", () => {
-    if (currentMode === "read") {
-      // Switch to edit mode
+    // Switch to edit mode
+    if (projectEditorTextarea) {
       originalDescription = projectEditorTextarea.value;
-      projectReadMode.classList.add("hidden");
-      projectEditMode.classList.remove("hidden");
-      projectSaveBtn.classList.remove("hidden");
-      projectCancelEditBtn.classList.remove("hidden");
-      projectModeToggle.classList.add("hidden");
-      projectEditorTextarea.focus();
-      currentMode = "edit";
     }
+
+    if (projectReadMode) projectReadMode.classList.add("hidden");
+    if (projectEditMode) projectEditMode.classList.remove("hidden");
+    projectModeToggle.classList.add("hidden");
+
+    if (projectSaveBtn) projectSaveBtn.classList.remove("hidden");
+    if (projectCancelEditBtn) projectCancelEditBtn.classList.remove("hidden");
+
+    if (projectEditorTextarea) projectEditorTextarea.focus();
   });
 }
 
 // Save project description
-if (projectSaveBtn) {
+if (projectSaveBtn && projectReadmeForm) {
   projectSaveBtn.addEventListener("click", () => {
-    const description = projectEditorTextarea.value;
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = `/projects/${projectSlug}/edit`;
-
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = "description";
-    input.value = description;
-
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
+    projectReadmeForm.submit();
   });
 }
 
@@ -313,131 +303,27 @@ if (projectSaveBtn) {
 if (projectCancelEditBtn) {
   projectCancelEditBtn.addEventListener("click", () => {
     // Reset textarea
-    projectEditorTextarea.value = originalDescription;
+    if (projectEditorTextarea) {
+      projectEditorTextarea.value = originalDescription;
+    }
 
     // Switch back to read mode
-    projectEditMode.classList.add("hidden");
-    projectReadMode.classList.remove("hidden");
-    projectSaveBtn.classList.add("hidden");
-    projectCancelEditBtn.classList.add("hidden");
-    projectModeToggle.classList.remove("hidden");
-    currentMode = "read";
+    if (projectEditMode) projectEditMode.classList.add("hidden");
+
+    if (projectSaveBtn) projectSaveBtn.classList.add("hidden");
+    if (projectCancelEditBtn) projectCancelEditBtn.classList.add("hidden");
+
+    if (projectReadMode) projectReadMode.classList.remove("hidden");
+    if (projectModeToggle) projectModeToggle.classList.remove("hidden");
   });
 }
 
-// Toolbar buttons for project markdown editing
-const projectToolbarButtons = {
-  heading: document.getElementById("projectHeadingBtn"),
-  bold: document.getElementById("projectBoldBtn"),
-  italic: document.getElementById("projectItalicBtn"),
-  strikethrough: document.getElementById("projectStrikethroughBtn"),
-  code: document.getElementById("projectCodeBtn"),
-  quote: document.getElementById("projectQuoteBtn"),
-  unorderedList: document.getElementById("projectUnorderedListBtn"),
-  orderedList: document.getElementById("projectOrderedListBtn"),
-  codeBlock: document.getElementById("projectCodeBlockBtn"),
-  horizontalRule: document.getElementById("projectHorizontalRuleBtn"),
-};
-
-const projectHeadingDropdown = document.getElementById(
-  "projectHeadingDropdown",
+// Init shared editor logic if element exists
+const projectEditorContainer = document.querySelector(
+  ".markdown-editor-instance",
 );
-
-function insertMarkdown(before, after = "") {
-  const textarea = projectEditorTextarea;
-  const start = textarea.selectionStart;
-  const end = textarea.selectionEnd;
-  const selectedText = textarea.value.substring(start, end);
-  const beforeText = textarea.value.substring(0, start);
-  const afterText = textarea.value.substring(end);
-
-  const newText = beforeText + before + selectedText + after + afterText;
-  textarea.value = newText;
-
-  textarea.selectionStart = start + before.length;
-  textarea.selectionEnd = start + before.length + selectedText.length;
-  textarea.focus();
-}
-
-// Toolbar event listeners for project markdown
-if (projectToolbarButtons.heading) {
-  projectToolbarButtons.heading.addEventListener("click", (e) => {
-    e.preventDefault();
-    projectHeadingDropdown.classList.toggle("hidden");
-  });
-}
-
-if (projectHeadingDropdown) {
-  projectHeadingDropdown
-    .querySelectorAll(".toolbar-dropdown-item")
-    .forEach((item) => {
-      item.addEventListener("click", (e) => {
-        const level = item.getAttribute("data-level");
-        insertMarkdown(`${"#".repeat(level)} `);
-        projectHeadingDropdown.classList.add("hidden");
-      });
-    });
-}
-
-if (projectToolbarButtons.bold) {
-  projectToolbarButtons.bold.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("**", "**");
-  });
-}
-
-if (projectToolbarButtons.italic) {
-  projectToolbarButtons.italic.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("*", "*");
-  });
-}
-
-if (projectToolbarButtons.strikethrough) {
-  projectToolbarButtons.strikethrough.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("~~", "~~");
-  });
-}
-
-if (projectToolbarButtons.code) {
-  projectToolbarButtons.code.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("`", "`");
-  });
-}
-
-if (projectToolbarButtons.quote) {
-  projectToolbarButtons.quote.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("> ");
-  });
-}
-
-if (projectToolbarButtons.unorderedList) {
-  projectToolbarButtons.unorderedList.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("- ");
-  });
-}
-
-if (projectToolbarButtons.orderedList) {
-  projectToolbarButtons.orderedList.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("1. ");
-  });
-}
-
-if (projectToolbarButtons.codeBlock) {
-  projectToolbarButtons.codeBlock.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("```\n", "\n```");
-  });
-}
-
-if (projectToolbarButtons.horizontalRule) {
-  projectToolbarButtons.horizontalRule.addEventListener("click", (e) => {
-    e.preventDefault();
-    insertMarkdown("\n---\n");
+if (projectEditorContainer) {
+  new MarkdownEditor(projectEditorContainer, {
+    projectSlug: document.querySelector(".project-layout")?.dataset.projectSlug,
   });
 }

@@ -1,0 +1,166 @@
+{% macro render_markdown_editor(name, content, project_slug, placeholder="Write
+your markdown here...", id="editorTextarea") %}
+<div class="markdown-editor-instance" data-project-slug="{{ project_slug }}">
+  <div class="editor-toolbar">
+    <div class="toolbar-group">
+      <button
+        type="button"
+        class="btn btn-secondary js-heading-btn"
+        title="Heading"
+      >
+        H
+      </button>
+      <div class="toolbar-dropdown js-heading-dropdown hidden">
+        <button type="button" class="toolbar-dropdown-item" data-level="1">
+          H1 - Large
+        </button>
+        <button type="button" class="toolbar-dropdown-item" data-level="2">
+          H2 - Medium
+        </button>
+        <button type="button" class="toolbar-dropdown-item" data-level="3">
+          H3 - Small
+        </button>
+        <button type="button" class="toolbar-dropdown-item" data-level="4">
+          H4
+        </button>
+        <button type="button" class="toolbar-dropdown-item" data-level="5">
+          H5
+        </button>
+        <button type="button" class="toolbar-dropdown-item" data-level="6">
+          H6
+        </button>
+      </div>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <button type="button" class="btn btn-secondary js-bold-btn" title="Bold">
+      𝐁
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-italic-btn"
+      title="Italic"
+    >
+      𝘐
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-strikethrough-btn"
+      title="Strikethrough"
+    >
+      ~~
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-code-btn"
+      title="Inline code"
+    >
+      `
+    </button>
+    <button type="button" class="btn btn-secondary js-quote-btn" title="Quote">
+      ❝
+    </button>
+
+    <div class="toolbar-divider"></div>
+
+    <button
+      type="button"
+      class="btn btn-secondary js-ul-btn"
+      title="Unordered list"
+    >
+      •
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-ol-btn"
+      title="Ordered list"
+    >
+      1.
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-codeblock-btn"
+      title="Code block"
+    >
+      { }
+    </button>
+    <button
+      type="button"
+      class="btn btn-secondary js-hr-btn"
+      title="Horizontal rule"
+    >
+      —
+    </button>
+
+    <div class="toolbar-divider"></div>
+
+    <button
+      type="button"
+      class="btn btn-secondary js-image-btn"
+      title="Insert image"
+    >
+      🖼️
+    </button>
+    <!-- Image Dropdown -->
+    <div class="image-dropdown js-image-dropdown hidden">
+      <input
+        type="text"
+        class="image-search js-dropdown-search"
+        data-search-type="media"
+        placeholder="Search images..."
+        spellcheck="false"
+      />
+      <div class="image-dropdown-list js-image-list"></div>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-secondary js-link-btn"
+      title="Link to another article"
+    >
+      🔗
+    </button>
+    <!-- Article Link Dropdown -->
+    <div class="article-link-dropdown js-link-dropdown hidden">
+      <input
+        type="text"
+        class="article-search js-dropdown-search"
+        data-search-type="articles"
+        placeholder="Search articles..."
+        spellcheck="false"
+      />
+      <div class="article-dropdown-list js-article-list"></div>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-secondary js-table-btn"
+      title="Insert a table"
+    >
+      📊
+    </button>
+
+    <div class="toolbar-divider"></div>
+
+    <button
+      type="button"
+      class="btn btn-secondary js-shortcuts-btn"
+      title="Keyboard shortcuts"
+    >
+      ?
+    </button>
+  </div>
+
+  <textarea
+    name="{{ name }}"
+    class="editor-textarea"
+    id="{{ id }}"
+    required
+    placeholder="{{ placeholder }}"
+    spellcheck="false"
+  >
+{{ content }}</textarea
+  >
+</div>
+{% endmacro %}

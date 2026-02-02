@@ -6,6 +6,7 @@ from services.project_store import load_projects, add_project, get_project_by_sl
 from services.folder_store import get_folders_tree
 from services.article_store import list_article_types
 from services.media_store import rewrite_media_urls
+from services.markdown_service import process_article_links
 from db import db_conn
 
 bp = Blueprint("projects", __name__, url_prefix="/projects")
@@ -44,10 +45,15 @@ def project_home(slug: str):
 
     # Render project description markdown
     raw_md = project.get("description", "")
-    rendered_html = md.markdown(
-        raw_md,
-        extensions=["tables", "fenced_code", "footnotes", "toc"],
-    ) if raw_md else ""
+    if raw_md:
+        raw_md = process_article_links(raw_md, slug)
+        rendered_html = md.markdown(
+            raw_md,
+            extensions=["tables", "fenced_code", "footnotes", "toc"],
+        )
+    else:
+        rendered_html = ""
+        
     rendered_html = rewrite_media_urls(rendered_html, slug)
     project["rendered_description"] = rendered_html
 

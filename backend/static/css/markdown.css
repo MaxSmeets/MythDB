@@ -5,8 +5,10 @@
 
 :root {
   /* Typography */
-  --md-font-body: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  --md-font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --md-font-body:
+    system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  --md-font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
   --md-font-size: 16px;
   --md-line-height: 1.65;
@@ -64,12 +66,25 @@
   font-weight: 700;
 }
 
-.markdown h1 { font-size: 2.0em; }
-.markdown h2 { font-size: 1.6em; }
-.markdown h3 { font-size: 1.3em; }
-.markdown h4 { font-size: 1.15em; }
-.markdown h5 { font-size: 1.05em; }
-.markdown h6 { font-size: 1.0em; color: var(--text-muted); }
+.markdown h1 {
+  font-size: 2em;
+}
+.markdown h2 {
+  font-size: 1.6em;
+}
+.markdown h3 {
+  font-size: 1.3em;
+}
+.markdown h4 {
+  font-size: 1.15em;
+}
+.markdown h5 {
+  font-size: 1.05em;
+}
+.markdown h6 {
+  font-size: 1em;
+  color: var(--text-muted);
+}
 
 /* Subtle divider under top headings */
 .markdown h1,
@@ -339,7 +354,8 @@
 }
 
 .shortcuts-modal .modal-header {
-  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg) var(--spacing-sm)
+    var(--spacing-lg);
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   justify-content: space-between;

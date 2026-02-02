@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% macro render_folder(node, project_slug) %} {% if
+{% extends "base.html" %} {% from "components/markdown_editor.html" import
+render_markdown_editor %} {% from "components/markdown_modals.html" import
+render_markdown_modals %} {% macro render_folder(node, project_slug) %} {% if
 node.folders and node.folders|length > 0 %} {% for folder in node.folders %}
 <li class="tree-folder" data-folder-id="{{ folder.id }}">
   <div class="tree-row">
@@ -532,147 +534,15 @@ project.name }}{% endblock %} {% block content %}
 
         <!-- Edit mode -->
         <div id="projectEditMode" class="project-editor hidden">
-          <div class="editor-toolbar">
-            <div class="toolbar-group">
-              <button
-                type="button"
-                id="projectHeadingBtn"
-                class="btn btn-secondary"
-                title="Heading"
-              >
-                H
-              </button>
-              <div id="projectHeadingDropdown" class="toolbar-dropdown hidden">
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="1"
-                >
-                  H1 - Large
-                </button>
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="2"
-                >
-                  H2 - Medium
-                </button>
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="3"
-                >
-                  H3 - Small
-                </button>
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="4"
-                >
-                  H4
-                </button>
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="5"
-                >
-                  H5
-                </button>
-                <button
-                  type="button"
-                  class="toolbar-dropdown-item"
-                  data-level="6"
-                >
-                  H6
-                </button>
-              </div>
-            </div>
-            <div class="toolbar-divider"></div>
-            <button
-              type="button"
-              id="projectBoldBtn"
-              class="btn btn-secondary"
-              title="Bold"
-            >
-              𝐁
-            </button>
-            <button
-              type="button"
-              id="projectItalicBtn"
-              class="btn btn-secondary"
-              title="Italic"
-            >
-              𝘐
-            </button>
-            <button
-              type="button"
-              id="projectStrikethroughBtn"
-              class="btn btn-secondary"
-              title="Strikethrough"
-            >
-              ~~
-            </button>
-            <button
-              type="button"
-              id="projectCodeBtn"
-              class="btn btn-secondary"
-              title="Inline code"
-            >
-              `
-            </button>
-            <button
-              type="button"
-              id="projectQuoteBtn"
-              class="btn btn-secondary"
-              title="Quote"
-            >
-              ❝
-            </button>
-            <div class="toolbar-divider"></div>
-            <button
-              type="button"
-              id="projectUnorderedListBtn"
-              class="btn btn-secondary"
-              title="Unordered list"
-            >
-              •
-            </button>
-            <button
-              type="button"
-              id="projectOrderedListBtn"
-              class="btn btn-secondary"
-              title="Ordered list"
-            >
-              1.
-            </button>
-            <button
-              type="button"
-              id="projectCodeBlockBtn"
-              class="btn btn-secondary"
-              title="Code block"
-            >
-              { }
-            </button>
-            <button
-              type="button"
-              id="projectHorizontalRuleBtn"
-              class="btn btn-secondary"
-              title="Horizontal rule"
-            >
-              —
-            </button>
-          </div>
-
-          <textarea
-            name="description"
-            class="editor-textarea"
-            id="projectEditorTextarea"
-            required
-            placeholder="Write your project description in markdown..."
-            spellcheck="false"
+          <form
+            id="projectReadmeForm"
+            method="POST"
+            action="{{ url_for('projects.edit_project', slug=project.slug) }}"
           >
-{{ project.description }}</textarea
-          >
+            {{ render_markdown_editor('description', project.description,
+            project.slug, id="projectEditorTextarea", placeholder="Write your
+            project description in markdown...") }}
+          </form>
         </div>
       </div>
     </section>
@@ -803,6 +673,8 @@ project.name }}{% endblock %} {% block content %}
     </div>
   </form>
 </dialog>
-{% endblock %} {% block scripts %}
+
+{{ render_markdown_modals() }} {% endblock %} {% block scripts %}
+<script src="{{ url_for('static', filename='js/markdown-editor.js') }}"></script>
 <script src="{{ url_for('static', filename='js/project.js') }}"></script>
 {% endblock %}

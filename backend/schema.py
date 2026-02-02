@@ -14,6 +14,7 @@ def init_schema() -> None:
                 slug TEXT NOT NULL UNIQUE,
                 name TEXT NOT NULL,
                 genre TEXT NOT NULL,
+                description TEXT NOT NULL DEFAULT '',
                 created_at TEXT NOT NULL
             );
             """
@@ -75,6 +76,13 @@ def init_schema() -> None:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_project_id ON articles(project_id);")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_folder_id ON articles(folder_id);")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_articles_type_id ON articles(type_id);")
+
+        # Migration: Add description column to projects if it doesn't exist
+        try:
+            conn.execute("ALTER TABLE projects ADD COLUMN description TEXT NOT NULL DEFAULT '';")
+        except:
+            # Column already exists
+            pass
 
         # Migration: Add featured_image column if it doesn't exist
         try:

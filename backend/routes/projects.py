@@ -1,9 +1,11 @@
 """Project management routes."""
 
 from flask import Blueprint, render_template, request, redirect, url_for, abort, jsonify
-from services.project_store import load_projects, add_project, get_project_by_slug, _get_project_statistics
+import markdown as md
+from services.project_store import load_projects, add_project, get_project_by_slug, _get_project_statistics, update_project_description
 from services.folder_store import get_folders_tree
 from services.article_store import list_article_types
+from services.media_store import rewrite_media_urls
 from db import db_conn
 
 bp = Blueprint("projects", __name__, url_prefix="/projects")
@@ -39,6 +41,15 @@ def project_home(slug: str):
     project = get_project_by_slug(slug)
     if not project:
         abort(404)
+
+    # Render project description markdown
+    raw_md = project.get("description", "")
+    rendered_html = md.markdown(
+        raw_md,
+        extensions=["tables", "fenced_code", "footnotes", "toc"],
+    ) if raw_md else ""
+    rendered_html = rewrite_media_urls(rendered_html, slug)
+    project["rendered_description"] = rendered_html
 
     tree = get_folders_tree(int(project["id"]))
     types = list_article_types()
@@ -115,3 +126,21 @@ def get_project_media_api(slug: str):
                 })
     
     return jsonify(media_files)
+
+@bp.route("/<slug>/edit", methods=["POST"])
+def edit_project(slug: str):
+    """Update project description (markdown content)."""
+    project = get_project_by_slug(slug)
+    if not project:
+        abort(404)
+
+    description = request.form.get("description", "")
+    
+    try:
+        update_project_description(int(project["id"]), description)
+        return redirect(url_for("projects.project_home", slug=slug))
+    except Exception as e:
+        return redirect(
+            url_for("projects.project_home", slug=slug, error=str(e))
+        )
+

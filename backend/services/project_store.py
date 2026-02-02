@@ -48,7 +48,7 @@ def _unique_slug(base_slug: str) -> str:
 def load_projects() -> list[dict[str, Any]]:
     with db_conn() as conn:
         rows = conn.execute(
-            "SELECT id, slug, name, genre, created_at FROM projects ORDER BY id DESC;"
+            "SELECT id, slug, name, genre, description, created_at FROM projects ORDER BY id DESC;"
         ).fetchall()
     return [dict(r) for r in rows]
 
@@ -79,7 +79,7 @@ def add_project(name: str, genre: str) -> dict[str, Any]:
             (slug, name, genre, created_at),
         )
         row = conn.execute(
-            "SELECT id, slug, name, genre, created_at FROM projects WHERE slug = ? LIMIT 1;",
+            "SELECT id, slug, name, genre, description, created_at FROM projects WHERE slug = ? LIMIT 1;",
             (slug,),
         ).fetchone()
 
@@ -89,7 +89,7 @@ def add_project(name: str, genre: str) -> dict[str, Any]:
 def get_project_by_slug(slug: str) -> dict[str, Any] | None:
     with db_conn() as conn:
         row = conn.execute(
-            "SELECT id, slug, name, genre, created_at FROM projects WHERE slug = ? LIMIT 1;",
+            "SELECT id, slug, name, genre, description, created_at FROM projects WHERE slug = ? LIMIT 1;",
             (slug,),
         ).fetchone()
     return dict(row) if row else None
@@ -184,3 +184,12 @@ def _get_project_statistics(project_id: int):
         "media_count": media_count,
         "recent_articles": formatted_articles,
     }
+
+
+def update_project_description(project_id: int, description: str) -> None:
+    """Update a project's description (markdown content)."""
+    with db_conn() as conn:
+        conn.execute(
+            "UPDATE projects SET description = ? WHERE id = ?;",
+            (description, project_id),
+        )

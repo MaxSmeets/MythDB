@@ -1,59 +1,116 @@
-{% extends "base.html" %}
+{% extends "base.html" %} {% macro render_folder(node, project_slug) %} {% if
+node.folders and node.folders|length > 0 %} {% for folder in node.folders %}
+<li class="tree-folder" data-folder-id="{{ folder.id }}">
+  <div class="tree-row">
+    <button
+      type="button"
+      class="tree-toggle"
+      aria-label="Toggle folder"
+      aria-expanded="false"
+    >
+      <span class="toggle-icon">▶</span>
+    </button>
+    <span class="tree-name">📁 {{ folder.name }}</span>
 
-{% macro render_folder(node, project_slug) %}
-{% if node.folders and node.folders|length > 0 %}
-  {% for folder in node.folders %}
-    <li class="tree-folder" data-folder-id="{{ folder.id }}">
-      <div class="tree-row">
-        <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="false">
-          <span class="toggle-icon">▶</span>
+    <div class="tree-folder-menu">
+      <button
+        type="button"
+        class="tree-menu-btn"
+        aria-label="Folder options"
+        data-folder-id="{{ folder.id }}"
+      >
+        ⋮
+      </button>
+      <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
+        <button
+          class="dropdown-item"
+          data-action="new-folder"
+          data-parent-id="{{ folder.id }}"
+        >
+          ➕ Folder
         </button>
-        <span class="tree-name">📁 {{ folder.name }}</span>
+        <button
+          class="dropdown-item"
+          data-action="new-article"
+          data-parent-id="{{ folder.id }}"
+        >
+          ➕ Article
+        </button>
+        <button
+          class="dropdown-item dropdown-warning"
+          data-action="rename-folder"
+          data-folder-id="{{ folder.id }}"
+        >
+          ✏️ Rename
+        </button>
+        <form
+          method="post"
+          action="{{ url_for('folders.delete_folder_route', slug=project_slug, folder_id=folder.id) }}"
+          style="margin: 0; display: inline"
+        >
+          <button
+            type="submit"
+            class="dropdown-item dropdown-danger"
+            onclick="return confirm('Delete folder? It must be empty.');"
+          >
+            🗑️ Delete
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
-        <div class="tree-folder-menu">
-          <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="{{ folder.id }}">⋮</button>
-          <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
-            <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
-            <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
-            <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
-            <form method="post" action="{{ url_for('folders.delete_folder_route', slug=project_slug, folder_id=folder.id) }}" style="margin: 0; display: inline;">
-              <button type="submit" class="dropdown-item dropdown-danger" onclick="return confirm('Delete folder? It must be empty.');">🗑️ Delete</button>
-            </form>
-          </div>
+  {% if folder.articles and folder.articles|length > 0 %}
+  <ul class="tree-articles tree-collapsible hidden">
+    {% for article in folder.articles %}
+    <li class="tree-article" data-article-id="{{ article.id }}">
+      <div class="tree-article-row">
+        <span class="tree-article-name"
+          >📝
+          <a
+            href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}"
+            >{{ article.title }}</a
+          ></span
+        >
+        <div class="tree-article-actions">
+          <button
+            type="button"
+            class="article-action-btn"
+            aria-label="Rename article"
+            title="Rename"
+          >
+            ✏️
+          </button>
+          <form
+            method="post"
+            action="{{ url_for('articles.delete_article_route', slug=project_slug, article_id=article.id) }}"
+            style="margin: 0; display: inline"
+          >
+            <button
+              type="submit"
+              class="article-action-btn article-action-danger"
+              aria-label="Delete article"
+              title="Delete"
+              onclick="
+                return confirm('Delete article? This cannot be undone.');
+              "
+            >
+              🗑️
+            </button>
+          </form>
         </div>
       </div>
-
-      {% if folder.articles and folder.articles|length > 0 %}
-      <ul class="tree-articles tree-collapsible hidden">
-        {% for article in folder.articles %}
-          <li class="tree-article" data-article-id="{{ article.id }}">
-            <div class="tree-article-row">
-              <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project_slug, article_id=article.id) }}">{{ article.title }}</a></span>
-              <div class="tree-article-actions">
-                <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
-                <form method="post" action="{{ url_for('articles.delete_article_route', slug=project_slug, article_id=article.id) }}" style="margin: 0; display: inline;">
-                  <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
-                </form>
-              </div>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-      {% endif %}
-
-      {% if folder.folders and folder.folders|length > 0 %}
-      <ul class="tree-children tree-collapsible hidden">
-        {{ render_folder(folder, project_slug) }}
-      </ul>
-      {% endif %}
     </li>
-  {% endfor %}
-{% endif %}
-{% endmacro %}
-
-{% block title %}MythDB · {{ project.name }}{% endblock %}
-
-{% block content %}
+    {% endfor %}
+  </ul>
+  {% endif %} {% if folder.folders and folder.folders|length > 0 %}
+  <ul class="tree-children tree-collapsible hidden">
+    {{ render_folder(folder, project_slug) }}
+  </ul>
+  {% endif %}
+</li>
+{% endfor %} {% endif %} {% endmacro %} {% block title %}MythDB · {{
+project.name }}{% endblock %} {% block content %}
 <div class="project-layout" data-project-slug="{{ project.slug }}">
   <header class="page-header">
     <p class="breadcrumb">
@@ -68,38 +125,64 @@
   <aside class="sidebar" aria-label="Project sidebar">
     <!-- Sidebar Tabs -->
     <div class="sidebar-tabs">
-      <button class="sidebar-tab-btn active" data-tab="file-tree" title="File tree">📁</button>
+      <button
+        class="sidebar-tab-btn active"
+        data-tab="file-tree"
+        title="File tree"
+      >
+        📁
+      </button>
       <button class="sidebar-tab-btn" data-tab="media" title="Media">🖼️</button>
       <button class="sidebar-tab-btn" data-tab="maps" title="Maps">🗺️</button>
-      <button class="sidebar-tab-btn" data-tab="timelines" title="Timelines">⏳</button>
-      <button class="sidebar-tab-btn" data-tab="variables" title="Variables">⚙️</button>
+      <button class="sidebar-tab-btn" data-tab="timelines" title="Timelines">
+        ⏳
+      </button>
+      <button class="sidebar-tab-btn" data-tab="variables" title="Variables">
+        ⚙️
+      </button>
     </div>
 
     <!-- Tab Content -->
     <div class="sidebar-tab-content">
-      
       <!-- Tab 1: File Tree -->
       <div class="sidebar-tab-panel active" id="file-tree-panel">
         {% if error %}
-          <p class="alert" role="alert">{{ error }}</p>
+        <p class="alert" role="alert">{{ error }}</p>
         {% endif %}
 
         <section class="tree" aria-label="Folder tree">
           <ul class="tree-root">
-            {% set root_folder = none %}
-            {% for folder in tree.folders if folder.slug == 'root' %}
-              {% set root_folder = folder %}
-            {% endfor %}
+            {% set root_folder = none %} {% for folder in tree.folders if
+            folder.slug == 'root' %} {% set root_folder = folder %} {% endfor %}
 
             <!-- Root Section: Always at top, no folder styling -->
             <li class="tree-section">
               <div class="tree-row">
                 <span class="tree-name">📋 Root</span>
                 <div class="tree-folder-menu">
-                  <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="">⋮</button>
+                  <button
+                    type="button"
+                    class="tree-menu-btn"
+                    aria-label="Folder options"
+                    data-folder-id=""
+                  >
+                    ⋮
+                  </button>
                   <div class="tree-dropdown" data-folder-id="">
-                    <button class="dropdown-item" data-action="new-folder" data-parent-id="">+ Folder</button>
-                    <button class="dropdown-item" data-action="new-article" data-parent-id="">+ Article</button>
+                    <button
+                      class="dropdown-item"
+                      data-action="new-folder"
+                      data-parent-id=""
+                    >
+                      + Folder
+                    </button>
+                    <button
+                      class="dropdown-item"
+                      data-action="new-article"
+                      data-parent-id=""
+                    >
+                      + Article
+                    </button>
                   </div>
                 </div>
               </div>
@@ -108,23 +191,53 @@
               {% if tree.articles and tree.articles|length > 0 %}
               <ul class="tree-articles">
                 {% for article in tree.articles %}
-                  <li class="tree-article" data-article-id="{{ article.id }}">
-                    <div class="tree-article-row">
-                      <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
-                      <div class="tree-article-actions">
-                        <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
-                        <form method="post" action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}" style="margin: 0; display: inline;">
-                          <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
-                        </form>
-                      </div>
+                <li class="tree-article" data-article-id="{{ article.id }}">
+                  <div class="tree-article-row">
+                    <span class="tree-article-name"
+                      >📝
+                      <a
+                        href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}"
+                        >{{ article.title }}</a
+                      ></span
+                    >
+                    <div class="tree-article-actions">
+                      <button
+                        type="button"
+                        class="article-action-btn"
+                        aria-label="Rename article"
+                        title="Rename"
+                      >
+                        ✏️
+                      </button>
+                      <form
+                        method="post"
+                        action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}"
+                        style="margin: 0; display: inline"
+                      >
+                        <button
+                          type="submit"
+                          class="article-action-btn article-action-danger"
+                          aria-label="Delete article"
+                          title="Delete"
+                          onclick="
+                            return confirm(
+                              'Delete article? This cannot be undone.',
+                            );
+                          "
+                        >
+                          🗑️
+                        </button>
+                      </form>
                     </div>
-                  </li>
+                  </div>
+                </li>
                 {% endfor %}
               </ul>
               {% endif %}
 
               <!-- Root folder's subfolders (if any) -->
-              {% if root_folder and root_folder.folders and root_folder.folders|length > 0 %}
+              {% if root_folder and root_folder.folders and
+              root_folder.folders|length > 0 %}
               <ul class="tree-children">
                 {{ render_folder(root_folder, project.slug) }}
               </ul>
@@ -132,54 +245,122 @@
             </li>
 
             <!-- Other folders (exclude Root) -->
-            {% if tree.folders and tree.folders|length > 0 %}
-              {% for folder in tree.folders if folder.slug != 'root' %}
-                <li class="tree-folder" data-folder-id="{{ folder.id }}">
-                  <div class="tree-row">
-                    <button type="button" class="tree-toggle" aria-label="Toggle folder" aria-expanded="false">
-                      <span class="toggle-icon">▶</span>
-                    </button>
-                    <span class="tree-name">📁 {{ folder.name }}</span>
+            {% if tree.folders and tree.folders|length > 0 %} {% for folder in
+            tree.folders if folder.slug != 'root' %}
+            <li class="tree-folder" data-folder-id="{{ folder.id }}">
+              <div class="tree-row">
+                <button
+                  type="button"
+                  class="tree-toggle"
+                  aria-label="Toggle folder"
+                  aria-expanded="false"
+                >
+                  <span class="toggle-icon">▶</span>
+                </button>
+                <span class="tree-name">📁 {{ folder.name }}</span>
 
-                    <div class="tree-folder-menu">
-                      <button type="button" class="tree-menu-btn" aria-label="Folder options" data-folder-id="{{ folder.id }}">⋮</button>
-                      <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
-                        <button class="dropdown-item" data-action="new-folder" data-parent-id="{{ folder.id }}">➕ Folder</button>
-                        <button class="dropdown-item" data-action="new-article" data-parent-id="{{ folder.id }}">➕ Article</button>
-                        <button class="dropdown-item dropdown-warning" data-action="rename-folder" data-folder-id="{{ folder.id }}">✏️ Rename</button>
-                        <form method="post" action="{{ url_for('folders.delete_folder_route', slug=project.slug, folder_id=folder.id) }}" style="margin: 0; display: inline;">
-                          <button type="submit" class="dropdown-item dropdown-danger" onclick="return confirm('Delete folder? It must be empty.');">🗑️ Delete</button>
-                        </form>
-                      </div>
+                <div class="tree-folder-menu">
+                  <button
+                    type="button"
+                    class="tree-menu-btn"
+                    aria-label="Folder options"
+                    data-folder-id="{{ folder.id }}"
+                  >
+                    ⋮
+                  </button>
+                  <div class="tree-dropdown" data-folder-id="{{ folder.id }}">
+                    <button
+                      class="dropdown-item"
+                      data-action="new-folder"
+                      data-parent-id="{{ folder.id }}"
+                    >
+                      ➕ Folder
+                    </button>
+                    <button
+                      class="dropdown-item"
+                      data-action="new-article"
+                      data-parent-id="{{ folder.id }}"
+                    >
+                      ➕ Article
+                    </button>
+                    <button
+                      class="dropdown-item dropdown-warning"
+                      data-action="rename-folder"
+                      data-folder-id="{{ folder.id }}"
+                    >
+                      ✏️ Rename
+                    </button>
+                    <form
+                      method="post"
+                      action="{{ url_for('folders.delete_folder_route', slug=project.slug, folder_id=folder.id) }}"
+                      style="margin: 0; display: inline"
+                    >
+                      <button
+                        type="submit"
+                        class="dropdown-item dropdown-danger"
+                        onclick="
+                          return confirm('Delete folder? It must be empty.');
+                        "
+                      >
+                        🗑️ Delete
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              {% if folder.articles and folder.articles|length > 0 %}
+              <ul class="tree-articles tree-collapsible hidden">
+                {% for article in folder.articles %}
+                <li class="tree-article" data-article-id="{{ article.id }}">
+                  <div class="tree-article-row">
+                    <span class="tree-article-name"
+                      >📝
+                      <a
+                        href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}"
+                        >{{ article.title }}</a
+                      ></span
+                    >
+                    <div class="tree-article-actions">
+                      <button
+                        type="button"
+                        class="article-action-btn"
+                        aria-label="Rename article"
+                        title="Rename"
+                      >
+                        ✏️
+                      </button>
+                      <form
+                        method="post"
+                        action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}"
+                        style="margin: 0; display: inline"
+                      >
+                        <button
+                          type="submit"
+                          class="article-action-btn article-action-danger"
+                          aria-label="Delete article"
+                          title="Delete"
+                          onclick="
+                            return confirm(
+                              'Delete article? This cannot be undone.',
+                            );
+                          "
+                        >
+                          🗑️
+                        </button>
+                      </form>
                     </div>
                   </div>
-
-                  {% if folder.articles and folder.articles|length > 0 %}
-                  <ul class="tree-articles tree-collapsible hidden">
-                    {% for article in folder.articles %}
-                      <li class="tree-article" data-article-id="{{ article.id }}">
-                        <div class="tree-article-row">
-                          <span class="tree-article-name">📝 <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}">{{ article.title }}</a></span>
-                          <div class="tree-article-actions">
-                            <button type="button" class="article-action-btn" aria-label="Rename article" title="Rename">✏️</button>
-                            <form method="post" action="{{ url_for('articles.delete_article_route', slug=project.slug, article_id=article.id) }}" style="margin: 0; display: inline;">
-                              <button type="submit" class="article-action-btn article-action-danger" aria-label="Delete article" title="Delete" onclick="return confirm('Delete article? This cannot be undone.');">🗑️</button>
-                            </form>
-                          </div>
-                        </div>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                  {% endif %}
-
-                  {% if folder.folders and folder.folders|length > 0 %}
-                  <ul class="tree-children tree-collapsible hidden">
-                    {{ render_folder(folder, project.slug) }}
-                  </ul>
-                  {% endif %}
                 </li>
-              {% endfor %}
-            {% endif %}
+                {% endfor %}
+              </ul>
+              {% endif %} {% if folder.folders and folder.folders|length > 0 %}
+              <ul class="tree-children tree-collapsible hidden">
+                {{ render_folder(folder, project.slug) }}
+              </ul>
+              {% endif %}
+            </li>
+            {% endfor %} {% endif %}
           </ul>
         </section>
       </div>
@@ -188,25 +369,33 @@
       <div class="sidebar-tab-panel" id="media-panel">
         <div class="media-sidebar">
           <!-- Search Bar -->
-          <input 
-            type="text" 
-            id="mediaSidebarSearch" 
-            class="media-search-input" 
+          <input
+            type="text"
+            id="mediaSidebarSearch"
+            class="media-search-input"
             placeholder="Search media..."
             spellcheck="false"
-          >
+          />
 
           <!-- Upload Button -->
-          <form 
+          <form
             id="mediaSidebarForm"
-            method="post" 
-            action="{{ url_for('media.media_upload', slug=project.slug) }}" 
+            method="post"
+            action="{{ url_for('media.media_upload', slug=project.slug) }}"
             enctype="multipart/form-data"
             class="media-upload-form"
           >
             <label class="media-upload-label">
-              <input type="file" name="file" accept="image/*" class="media-file-input" hidden>
-              <span class="btn btn-primary media-upload-btn">⬆️ Upload Image</span>
+              <input
+                type="file"
+                name="file"
+                accept="image/*"
+                class="media-file-input"
+                hidden
+              />
+              <span class="btn btn-primary media-upload-btn"
+                >⬆️ Upload Image</span
+              >
             </label>
           </form>
 
@@ -235,12 +424,10 @@
           <p class="text-muted">Variables feature coming soon...</p>
         </div>
       </div>
-
     </div>
   </aside>
 
   <section class="project-main" aria-label="Project home">
-
     <!-- Project Statistics -->
     <section class="stats-section" aria-label="Project statistics">
       <div class="stat-item">
@@ -273,44 +460,254 @@
     <section class="quick-guide" id="quickGuide" aria-label="Getting started">
       <div class="quick-guide-header">
         <h3>Getting Started</h3>
-        <button type="button" id="hideQuickGuide" class="btn-icon" aria-label="Hide quick guide" title="Hide quick guide">✕</button>
+        <button
+          type="button"
+          id="hideQuickGuide"
+          class="btn-icon"
+          aria-label="Hide quick guide"
+          title="Hide quick guide"
+        >
+          ✕
+        </button>
       </div>
       <div class="guide-cards">
         <div class="guide-card">
           <div class="guide-icon">📁</div>
           <h4>Organize with Folders</h4>
-          <p>Use the sidebar to create folders and organize your articles by location, character groups, or any structure that makes sense for your world.</p>
+          <p>
+            Use the sidebar to create folders and organize your articles by
+            location, character groups, or any structure that makes sense for
+            your world.
+          </p>
         </div>
         <div class="guide-card">
           <div class="guide-icon">📝</div>
           <h4>Create Articles</h4>
-          <p>Right-click on any folder to create a new article. Choose from 5 article types: NPCs, Locations, Settlements, Factions, and Items.</p>
+          <p>
+            Right-click on any folder to create a new article. Choose from 5
+            article types: NPCs, Locations, Settlements, Factions, and Items.
+          </p>
         </div>
         <div class="guide-card">
           <div class="guide-icon">✏️</div>
           <h4>Write in Markdown</h4>
-          <p>All articles support full Markdown formatting. Add bold, italics, lists, headings, links, code blocks, and more to bring your world to life.</p>
+          <p>
+            All articles support full Markdown formatting. Add bold, italics,
+            lists, headings, links, code blocks, and more to bring your world to
+            life.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project Description -->
+    <section
+      class="project-description-section card card-collapsible"
+      id="projectDescriptionCard"
+      aria-label="Project description"
+    >
+      <div class="card-header-row">
+        <h3 class="card-title">Project Description</h3>
+        <div class="header-actions">
+          <button id="projectSaveBtn" class="btn btn-primary hidden">
+            💾 Save
+          </button>
+          <button id="projectCancelEditBtn" class="btn btn-secondary hidden">
+            ✕ Cancel
+          </button>
+          <button id="projectModeToggle" class="btn" data-mode="read">
+            ✏️ Edit
+          </button>
+        </div>
+      </div>
+      <div class="card-content" id="projectDescriptionContent">
+        <!-- Read mode -->
+        <article
+          id="projectReadMode"
+          class="project-body markdown"
+          aria-label="Project description"
+        >
+          {{ project.rendered_description | safe }}
+        </article>
+
+        <!-- Edit mode -->
+        <div id="projectEditMode" class="project-editor hidden">
+          <div class="editor-toolbar">
+            <div class="toolbar-group">
+              <button
+                type="button"
+                id="projectHeadingBtn"
+                class="btn btn-secondary"
+                title="Heading"
+              >
+                H
+              </button>
+              <div id="projectHeadingDropdown" class="toolbar-dropdown hidden">
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="1"
+                >
+                  H1 - Large
+                </button>
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="2"
+                >
+                  H2 - Medium
+                </button>
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="3"
+                >
+                  H3 - Small
+                </button>
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="4"
+                >
+                  H4
+                </button>
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="5"
+                >
+                  H5
+                </button>
+                <button
+                  type="button"
+                  class="toolbar-dropdown-item"
+                  data-level="6"
+                >
+                  H6
+                </button>
+              </div>
+            </div>
+            <div class="toolbar-divider"></div>
+            <button
+              type="button"
+              id="projectBoldBtn"
+              class="btn btn-secondary"
+              title="Bold"
+            >
+              𝐁
+            </button>
+            <button
+              type="button"
+              id="projectItalicBtn"
+              class="btn btn-secondary"
+              title="Italic"
+            >
+              𝘐
+            </button>
+            <button
+              type="button"
+              id="projectStrikethroughBtn"
+              class="btn btn-secondary"
+              title="Strikethrough"
+            >
+              ~~
+            </button>
+            <button
+              type="button"
+              id="projectCodeBtn"
+              class="btn btn-secondary"
+              title="Inline code"
+            >
+              `
+            </button>
+            <button
+              type="button"
+              id="projectQuoteBtn"
+              class="btn btn-secondary"
+              title="Quote"
+            >
+              ❝
+            </button>
+            <div class="toolbar-divider"></div>
+            <button
+              type="button"
+              id="projectUnorderedListBtn"
+              class="btn btn-secondary"
+              title="Unordered list"
+            >
+              •
+            </button>
+            <button
+              type="button"
+              id="projectOrderedListBtn"
+              class="btn btn-secondary"
+              title="Ordered list"
+            >
+              1.
+            </button>
+            <button
+              type="button"
+              id="projectCodeBlockBtn"
+              class="btn btn-secondary"
+              title="Code block"
+            >
+              { }
+            </button>
+            <button
+              type="button"
+              id="projectHorizontalRuleBtn"
+              class="btn btn-secondary"
+              title="Horizontal rule"
+            >
+              —
+            </button>
+          </div>
+
+          <textarea
+            name="description"
+            class="editor-textarea"
+            id="projectEditorTextarea"
+            required
+            placeholder="Write your project description in markdown..."
+            spellcheck="false"
+          >
+{{ project.description }}</textarea
+          >
         </div>
       </div>
     </section>
 
     <!-- Recent Articles -->
     {% if stats.recent_articles and stats.recent_articles|length > 0 %}
-    <section class="recent-articles card card-collapsible" id="recentArticlesCard" aria-label="Recently updated articles">
+    <section
+      class="recent-articles card card-collapsible"
+      id="recentArticlesCard"
+      aria-label="Recently updated articles"
+    >
       <div class="card-header-row">
         <h3 class="card-title">Recently Updated</h3>
-        <button type="button" class="btn-collapse" aria-expanded="true">▼</button>
+        <button type="button" class="btn-collapse" aria-expanded="true">
+          ▼
+        </button>
       </div>
       <div class="article-list card-content" id="recentArticlesContent">
         {% for article in stats.recent_articles %}
         <div class="article-item">
           <div class="article-header">
-            <a href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}" class="article-title">
+            <a
+              href="{{ url_for('articles.article_view', slug=project.slug, article_id=article.id) }}"
+              class="article-title"
+            >
               {{ article.title }}
             </a>
             <span class="article-type">{{ article.type_name }}</span>
           </div>
-          <p class="article-meta">{{ article.updated_at_formatted }} <span class="article-time-relative">[{{ article.updated_at_relative }}]</span></p>
+          <p class="article-meta">
+            {{ article.updated_at_formatted }}
+            <span class="article-time-relative"
+              >[{{ article.updated_at_relative }}]</span
+            >
+          </p>
         </div>
         {% endfor %}
       </div>
@@ -321,7 +718,11 @@
 
 <!-- New Folder Modal -->
 <dialog id="folderModal" aria-labelledby="folderModalTitle">
-  <form method="post" action="{{ url_for('folders.create_folder_route', slug=project.slug) }}" class="modal">
+  <form
+    method="post"
+    action="{{ url_for('folders.create_folder_route', slug=project.slug) }}"
+    class="modal"
+  >
     <div class="modal-container">
       <header class="modal-header">
         <h3 id="folderModalTitle">New folder</h3>
@@ -332,10 +733,17 @@
 
         <label>
           <span>Folder name</span>
-          <input name="name" type="text" required placeholder="e.g. Locations" />
+          <input
+            name="name"
+            type="text"
+            required
+            placeholder="e.g. Locations"
+          />
         </label>
 
-        <p class="muted"><small>This will be created inside the selected folder.</small></p>
+        <p class="muted">
+          <small>This will be created inside the selected folder.</small>
+        </p>
       </div>
 
       <footer class="modal-footer">
@@ -348,7 +756,11 @@
 
 <!-- New Article Modal -->
 <dialog id="articleModal" aria-labelledby="articleModalTitle">
-  <form method="post" action="{{ url_for('articles.create_article', slug=project.slug) }}" class="modal">
+  <form
+    method="post"
+    action="{{ url_for('articles.create_article', slug=project.slug) }}"
+    class="modal"
+  >
     <div class="modal-container">
       <header class="modal-header">
         <h3 id="articleModalTitle">New article</h3>
@@ -359,21 +771,30 @@
 
         <label>
           <span>Article title</span>
-          <input name="title" type="text" required placeholder="e.g. The Ashen Serpents" />
+          <input
+            name="title"
+            type="text"
+            required
+            placeholder="e.g. The Ashen Serpents"
+          />
         </label>
 
         <label>
           <span>Type</span>
           <select name="type_key" required>
             {% for t in types %}
-              <option value="{{ t.key }}">{{ t.name }}</option>
+            <option value="{{ t.key }}">{{ t.name }}</option>
             {% endfor %}
           </select>
         </label>
 
-        <p class="muted"><small>This will create an article in the selected folder with markdown stored in the database.</small></p>
+        <p class="muted">
+          <small
+            >This will create an article in the selected folder with markdown
+            stored in the database.</small
+          >
+        </p>
       </div>
-
 
       <footer class="modal-footer">
         <button type="button" data-close="articleModal">Cancel</button>
@@ -382,8 +803,6 @@
     </div>
   </form>
 </dialog>
-{% endblock %}
-
-{% block scripts %}
+{% endblock %} {% block scripts %}
 <script src="{{ url_for('static', filename='js/project.js') }}"></script>
 {% endblock %}

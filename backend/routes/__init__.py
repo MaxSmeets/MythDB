@@ -1,7 +1,7 @@
 """Route blueprints for the application."""
 
 from flask import Blueprint
-from . import pages, projects, articles, media, folders
+from . import pages, projects, articles, media, folders, search
 
 
 def register_blueprints(app):
@@ -11,3 +11,4 @@ def register_blueprints(app):
     app.register_blueprint(articles.bp)
     app.register_blueprint(media.bp)
     app.register_blueprint(folders.bp)
+    app.register_blueprint(search.bp)

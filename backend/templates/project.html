@@ -434,6 +434,49 @@ project.name }}{% endblock %} {% block subheader %}
   </aside>
 
   <div class="project-main" aria-label="Project home">
+    <!-- Quick Guide -->
+    <section class="quick-guide" id="quickGuide" aria-label="Getting started">
+      <div class="quick-guide-header">
+        <h3>Getting Started</h3>
+        <button
+          type="button"
+          id="hideQuickGuide"
+          class="btn-icon"
+          aria-label="Hide quick guide"
+          title="Hide quick guide"
+        >
+          ✕
+        </button>
+      </div>
+      <div class="guide-cards">
+        <div class="guide-card">
+          <div class="guide-icon">📁</div>
+          <h4>Organize with Folders</h4>
+          <p>
+            Use the sidebar to create folders and organize your articles by
+            location, character groups, or any structure that makes sense for
+            your world.
+          </p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">📝</div>
+          <h4>Create Articles</h4>
+          <p>
+            Right-click on any folder to create a new article. Choose from 5
+            article types: NPCs, Locations, Settlements, Factions, and Items.
+          </p>
+        </div>
+        <div class="guide-card">
+          <div class="guide-icon">✏️</div>
+          <h4>Write in Markdown</h4>
+          <p>
+            All articles support full Markdown formatting. Add bold, italics,
+            lists, headings, links, code blocks, and more to bring your world to
+            life.
+          </p>
+        </div>
+      </div>
+    </section>
     <!-- Project Description -->
     <section
       class="project-description-section card card-collapsible"
@@ -511,50 +554,6 @@ project.name }}{% endblock %} {% block subheader %}
       <div class="stat-item">
         <div class="stat-number">{{ stats.media_count }}</div>
         <div class="stat-label">Media Files</div>
-      </div>
-    </section>
-
-    <!-- Quick Guide -->
-    <section class="quick-guide" id="quickGuide" aria-label="Getting started">
-      <div class="quick-guide-header">
-        <h3>Getting Started</h3>
-        <button
-          type="button"
-          id="hideQuickGuide"
-          class="btn-icon"
-          aria-label="Hide quick guide"
-          title="Hide quick guide"
-        >
-          ✕
-        </button>
-      </div>
-      <div class="guide-cards">
-        <div class="guide-card">
-          <div class="guide-icon">📁</div>
-          <h4>Organize with Folders</h4>
-          <p>
-            Use the sidebar to create folders and organize your articles by
-            location, character groups, or any structure that makes sense for
-            your world.
-          </p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-icon">📝</div>
-          <h4>Create Articles</h4>
-          <p>
-            Right-click on any folder to create a new article. Choose from 5
-            article types: NPCs, Locations, Settlements, Factions, and Items.
-          </p>
-        </div>
-        <div class="guide-card">
-          <div class="guide-icon">✏️</div>
-          <h4>Write in Markdown</h4>
-          <p>
-            All articles support full Markdown formatting. Add bold, italics,
-            lists, headings, links, code blocks, and more to bring your world to
-            life.
-          </p>
-        </div>
       </div>
     </section>
 

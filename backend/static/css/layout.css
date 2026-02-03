@@ -96,6 +96,35 @@ pre {
   text-decoration: underline;
 }
 
+.search-button {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.search-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.search-icon {
+  font-size: 1.1em;
+}
+
+.search-keybind {
+  font-size: 0.85em;
+  opacity: 0.6;
+}
+
 /* =========================
    Page Structure
    ========================= */

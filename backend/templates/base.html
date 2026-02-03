@@ -44,14 +44,12 @@
           /></a>
         </div>
 
+        <button id="searchBtn" class="search-button" title="Search (Alt+K)">
+          <span class="search-icon">🔍</span>
+          <span class="search-keybind">Alt+K</span>
+        </button>
+
         <nav class="nav">
-          <button
-            id="searchBtn"
-            class="btn btn-secondary"
-            title="Search (Alt+K)"
-          >
-            🔍
-          </button>
           <a
             href="{{ url_for('pages.admin_dashboard') }}"
             class="{% if active_page == 'admin' %}active{% endif %}"

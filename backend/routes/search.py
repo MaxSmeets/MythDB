@@ -130,7 +130,8 @@ def search():
                 'type': article['type_name'] or 'Article',
                 'url': url_for('articles.article_view', slug=article['project_slug'], article_id=article['id']),
                 'excerpt': excerpt,
-                'project': article['project_name']
+                'project': article['project_name'],
+                'article_slug': article['slug']
             })
         
         # Search media files
@@ -148,6 +149,7 @@ def search():
                         'title': filename,
                         'type': 'Media',
                         'url': url_for('media.project_media', slug=project['slug']),
+                        'filename': filename,
                         'excerpt': f"Image file in {project['name']}",
                         'project': project['name'],
                         'thumbnail': url_for('media.media_file', slug=project['slug'], filename=filename)

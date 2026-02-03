@@ -112,18 +112,22 @@ node.folders and node.folders|length > 0 %} {% for folder in node.folders %}
   {% endif %}
 </li>
 {% endfor %} {% endif %} {% endmacro %} {% block title %}MythDB · {{
-project.name }}{% endblock %} {% block content %}
+project.name }}{% endblock %} {% block subheader %}
+<div
+  class="subheader"
+  style="
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-bottom: 1px solid var(--border-subtle);
+  "
+>
+  <p class="breadcrumb" style="margin: 0">
+    <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
+    <span aria-hidden="true">/</span>
+    <span>{{ project.name }}</span>
+  </p>
+</div>
+{% endblock %} {% block content %}
 <div class="project-layout" data-project-slug="{{ project.slug }}">
-  <header class="page-header">
-    <p class="breadcrumb">
-      <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
-      <span aria-hidden="true">/</span>
-      <span>{{ project.name }}</span>
-    </p>
-    <h2>{{ project.name }}</h2>
-    <p class="muted"><strong>Genre:</strong> {{ project.genre }}</p>
-  </header>
-
   <aside class="sidebar" aria-label="Project sidebar">
     <!-- Sidebar Tabs -->
     <div class="sidebar-tabs">
@@ -429,9 +433,61 @@ project.name }}{% endblock %} {% block content %}
     </div>
   </aside>
 
-  <section class="project-main" aria-label="Project home">
+  <div class="project-main" aria-label="Project home">
+    <!-- Project Description -->
+    <section
+      class="project-description-section card card-collapsible"
+      id="projectDescriptionCard"
+      aria-label="Project description"
+    >
+      <div class="card-header-row">
+        <div>
+          <h2 style="margin: 0; font-size: 1.5rem">{{ project.name }}</h2>
+          <p class="muted" style="margin: 0">{{ project.genre }}</p>
+        </div>
+        <div class="header-actions">
+          <button id="projectSaveBtn" class="btn btn-primary hidden">
+            💾 Save
+          </button>
+          <button id="projectCancelEditBtn" class="btn btn-secondary hidden">
+            ✕ Cancel
+          </button>
+          <button id="projectModeToggle" class="btn" data-mode="read">
+            ✏️ Edit
+          </button>
+        </div>
+      </div>
+      <div class="card-content" id="projectDescriptionContent">
+        <!-- Read mode -->
+        <article
+          id="projectReadMode"
+          class="project-body markdown"
+          aria-label="Project description"
+        >
+          {{ project.rendered_description | safe }}
+        </article>
+
+        <!-- Edit mode -->
+        <div id="projectEditMode" class="project-editor hidden">
+          <form
+            id="projectReadmeForm"
+            method="POST"
+            action="{{ url_for('projects.edit_project', slug=project.slug) }}"
+          >
+            {{ render_markdown_editor('description', project.description,
+            project.slug, id="projectEditorTextarea", placeholder="Write your
+            project description in markdown...") }}
+          </form>
+        </div>
+      </div>
+    </section>
+
     <!-- Project Statistics -->
-    <section class="stats-section" aria-label="Project statistics">
+    <section
+      class="stats-section"
+      aria-label="Project statistics"
+      style="margin-top: 2rem"
+    >
       <div class="stat-item">
         <div class="stat-number">{{ stats.folders_count }}</div>
         <div class="stat-label">Folders</div>
@@ -502,51 +558,6 @@ project.name }}{% endblock %} {% block content %}
       </div>
     </section>
 
-    <!-- Project Description -->
-    <section
-      class="project-description-section card card-collapsible"
-      id="projectDescriptionCard"
-      aria-label="Project description"
-    >
-      <div class="card-header-row">
-        <h3 class="card-title">Project Description</h3>
-        <div class="header-actions">
-          <button id="projectSaveBtn" class="btn btn-primary hidden">
-            💾 Save
-          </button>
-          <button id="projectCancelEditBtn" class="btn btn-secondary hidden">
-            ✕ Cancel
-          </button>
-          <button id="projectModeToggle" class="btn" data-mode="read">
-            ✏️ Edit
-          </button>
-        </div>
-      </div>
-      <div class="card-content" id="projectDescriptionContent">
-        <!-- Read mode -->
-        <article
-          id="projectReadMode"
-          class="project-body markdown"
-          aria-label="Project description"
-        >
-          {{ project.rendered_description | safe }}
-        </article>
-
-        <!-- Edit mode -->
-        <div id="projectEditMode" class="project-editor hidden">
-          <form
-            id="projectReadmeForm"
-            method="POST"
-            action="{{ url_for('projects.edit_project', slug=project.slug) }}"
-          >
-            {{ render_markdown_editor('description', project.description,
-            project.slug, id="projectEditorTextarea", placeholder="Write your
-            project description in markdown...") }}
-          </form>
-        </div>
-      </div>
-    </section>
-
     <!-- Recent Articles -->
     {% if stats.recent_articles and stats.recent_articles|length > 0 %}
     <section
@@ -583,7 +594,7 @@ project.name }}{% endblock %} {% block content %}
       </div>
     </section>
     {% endif %}
-  </section>
+  </div>
 </div>
 
 <!-- New Folder Modal -->

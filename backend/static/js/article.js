@@ -41,7 +41,7 @@ modeToggle.addEventListener("click", () => {
     editMode.classList.remove("hidden");
     document.getElementById("viewModeFields")?.classList.add("hidden");
     document.getElementById("editModeFields")?.classList.remove("hidden");
-    modeToggle.textContent = "👁️ View";
+    modeToggle.classList.add("hidden");
     modeToggle.dataset.mode = "edit";
     saveBtn.classList.remove("hidden");
     cancelEditBtn.classList.remove("hidden");
@@ -66,7 +66,7 @@ modeToggle.addEventListener("click", () => {
     editMode.classList.add("hidden");
     document.getElementById("viewModeFields")?.classList.remove("hidden");
     document.getElementById("editModeFields")?.classList.add("hidden");
-    modeToggle.textContent = "✏️ Edit";
+    modeToggle.classList.remove("hidden");
     modeToggle.dataset.mode = "read";
     saveBtn.classList.add("hidden");
     cancelEditBtn.classList.add("hidden");
@@ -257,6 +257,7 @@ async function selectImage(filename) {
             src="${mediaUrl}" 
             alt="Featured image"
             class="article-image"
+            style="cursor: pointer;"
           >
           <button type="button" id="changeImageBtn" class="btn-change-image">Change Image</button>
         `;
@@ -308,38 +309,6 @@ if (changeImageBtn) {
     }
   });
 }
-
-// Image button - open editor image dropdown
-imageBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  editorImageDropdown.classList.toggle("hidden");
-  if (!editorImageDropdown.classList.contains("hidden")) {
-    editorImageSearchInput.focus();
-  }
-});
-
-// Hotkey for image: ALT+SHIFT+I
-document.addEventListener("keydown", (e) => {
-  if (e.altKey && e.shiftKey && e.key.toUpperCase() === "I") {
-    e.preventDefault();
-    imageBtn.click();
-  }
-});
-
-// Editor image search
-editorImageSearchInput.addEventListener("input", (e) => {
-  filterEditorMediaFiles(e.target.value);
-});
-
-// Close editor image dropdown when clicking outside
-document.addEventListener("click", (e) => {
-  if (
-    !e.target.closest("#imageBtn") &&
-    !e.target.closest("#editorImageDropdown")
-  ) {
-    editorImageDropdown.classList.add("hidden");
-  }
-});
 
 // Filter media as user types
 imageSearchInput.addEventListener("input", (e) => {
@@ -468,12 +437,15 @@ document.addEventListener("click", (e) => {
 // ==========================
 
 // Open image viewer modal when clicking featured image
-if (featuredImage) {
-  featuredImage.addEventListener("click", () => {
-    modalImage.src = featuredImage.src;
+document.addEventListener("click", (e) => {
+  if (
+    e.target.classList.contains("article-image") ||
+    e.target.id === "featuredImage"
+  ) {
+    modalImage.src = e.target.src;
     imageViewerModal.classList.remove("hidden");
-  });
-}
+  }
+});
 
 // Close image viewer modal
 function closeImageViewer() {

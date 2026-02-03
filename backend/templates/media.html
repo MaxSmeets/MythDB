@@ -1,56 +1,61 @@
-{% extends "base.html" %}
-
-{% block title %}MythDB · {{ project.name }} · Media{% endblock %}
-
-{% block content %}
-<header class="page-header">
-  <p class="breadcrumb">
+{% extends "base.html" %} {% block title %}MythDB · {{ project.name }} · Media{%
+endblock %} {% block subheader %}
+<div
+  class="subheader"
+  style="
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-bottom: 1px solid var(--border-subtle);
+  "
+>
+  <p class="breadcrumb" style="margin: 0">
     <a href="{{ url_for('projects.projects_overview') }}">Projects</a>
     <span aria-hidden="true">/</span>
-    <a href="{{ url_for('projects.project_home', slug=project.slug) }}">{{ project.name }}</a>
+    <a href="{{ url_for('projects.project_home', slug=project.slug) }}"
+      >{{ project.name }}</a
+    >
     <span aria-hidden="true">/</span>
     <span>Media</span>
   </p>
-
-  <h2>Media</h2>
-  <p class="muted">Upload images to use in articles later.</p>
-</header>
-
-{% if error %}
-  <p class="alert" role="alert">{{ error }}</p>
+</div>
+{% endblock %} {% block content %} {% if error %}
+<p class="alert" role="alert">{{ error }}</p>
 {% endif %}
 
 <section class="upload-panel" aria-label="Upload media">
-  <form method="post" action="{{ url_for('media.media_upload', slug=project.slug) }}" enctype="multipart/form-data">
+  <form
+    method="post"
+    action="{{ url_for('media.media_upload', slug=project.slug) }}"
+    enctype="multipart/form-data"
+  >
     <label class="upload-row">
       <span>Choose image</span>
-      <input type="file" name="file" accept="image/*" required>
+      <input type="file" name="file" accept="image/*" required />
     </label>
 
     <div class="upload-actions">
       <button type="submit">Upload</button>
     </div>
 
-    <p class="muted"><small>Supported: PNG, JPG, JPEG, WEBP, GIF. Max 10 MB.</small></p>
+    <p class="muted">
+      <small>Supported: PNG, JPG, JPEG, WEBP, GIF. Max 10 MB.</small>
+    </p>
   </form>
 </section>
 
 <section class="media-grid" aria-label="Uploaded media">
-  {% if items and items|length > 0 %}
-    {% for item in items %}
-      <figure class="media-card">
-        <img
-          src="{{ url_for('media.media_file', slug=project.slug, filename=item.filename) }}"
-          alt="{{ item.filename }}"
-          loading="lazy"
-        >
-        <figcaption class="media-caption">
-          <code>{{ item.filename }}</code>
-        </figcaption>
-      </figure>
-    {% endfor %}
-  {% else %}
-    <p class="muted">No media yet. Upload your first image above.</p>
+  {% if items and items|length > 0 %} {% for item in items %}
+  <figure class="media-card">
+    <img
+      src="{{ url_for('media.media_file', slug=project.slug, filename=item.filename) }}"
+      alt="{{ item.filename }}"
+      loading="lazy"
+    />
+    <figcaption class="media-caption">
+      <code>{{ item.filename }}</code>
+    </figcaption>
+  </figure>
+  {% endfor %} {% else %}
+  <p class="muted">No media yet. Upload your first image above.</p>
   {% endif %}
 </section>
 {% endblock %}

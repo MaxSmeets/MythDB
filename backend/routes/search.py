@@ -114,11 +114,11 @@ def search():
             FROM articles a
             JOIN projects p ON a.project_id = p.id
             LEFT JOIN article_types at ON a.type_id = at.id
-            WHERE a.title LIKE ? OR a.body_content LIKE ?
+            WHERE a.title LIKE ? OR a.body_content LIKE ? OR at.name LIKE ?
             ORDER BY a.title
             LIMIT 20
             ''',
-            (search_pattern, search_pattern)
+            (search_pattern, search_pattern, search_pattern)
         ).fetchall()
         
         for article in articles:
